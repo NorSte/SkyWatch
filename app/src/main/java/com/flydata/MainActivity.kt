@@ -3,13 +3,19 @@ package com.flydata
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import com.flydata.ui.theme.BackgroundColor
 import com.flydata.ui.theme.FlydataTheme
 
 class MainActivity : ComponentActivity() {
@@ -17,27 +23,124 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FlydataTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = BackgroundColor
                 ) {
-                    Greeting("Android")
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.SpaceAround,
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            Text("SkyWatch", fontSize = 32.sp)
+                            Text("Det nærmeste (3.2km) flyet er: ")
+                        }
+
+                        FlightCard()
+                    }
                 }
             }
         }
     }
 }
 
+data class TimeTable(val expected: String, val actual: String)
+
+data class TimeTables(val origin: TimeTable, val destination: TimeTable)
+
+// TODO: FlightCard tar f.eks. inn icao24, gjør API-uthentinger, bytt ut hardkodede verdier
 @Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
+fun FlightCard() {
+    val timeTables = TimeTables(TimeTable("14:05", "14:31"), TimeTable("16:20", "16:46"))
+
+    Column(
+        Modifier.padding(bottom = 100.dp),
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Text("DLH2VC", fontWeight = FontWeight.Bold)
+        Text("Norwegian", color = Color.Gray)
+        Text("787-9 Dreamliner")
+
+        // TODO: Finn dynamisk måte å hente bilde. Alternativt fjern bildet
+        AsyncImage(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 5.dp),
+            model = "https://flysmart24.no/wp-content/uploads/2021/12/dymaxern-777x437.jpg",
+            contentDescription = "Image of a Norwegian plane"
+        )
+
+        Row {
+            AirportInfo(
+                false,
+                "EDDF",
+                "Frankfurt",
+                timeTables.origin,
+                modifier = Modifier
+                    .weight(1f)
+                    .background(Color.White)
+            )
+            Divider()
+            AirportInfo(
+                true,
+                "ESSA",
+                "Stockholm Arlanda",
+                timeTables.destination,
+                modifier = Modifier
+                    .weight(1f)
+                    .background(Color.White)
+            )
+        }
+    }
 }
 
-@Preview(showBackground = true)
+// TODO: AirportInfo tar inn identifikator, gjør API-uthentinger, fyller informasjon deretter
 @Composable
-fun DefaultPreview() {
-    FlydataTheme {
-        Greeting("Android")
+fun AirportInfo(
+    isDestinationAirport: Boolean,
+    code: String,
+    name: String,
+    timeTable: TimeTable,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier) {
+        Column(
+            Modifier
+                .padding(5.dp)
+        ) {
+            Text(
+                if (isDestinationAirport) "TIL" else "FRA",
+                fontSize = 10.sp,
+            )
+            Text(code, fontWeight = FontWeight.Bold)
+            Text(name)
+        }
+        Time(true, timeTable.expected)
+        Time(false, timeTable.actual)
     }
+}
+
+@Composable
+fun Time(isPlanned: Boolean, time: String) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(bottom = 5.dp)
+            .background(Color(0XFFEBEBEB))
+            .padding(5.dp),
+        Arrangement.SpaceBetween
+    ) {
+        Text(if (isPlanned) "Planlagt" else "Forventet")
+        Text(time, fontWeight = FontWeight.Bold)
+    }
+}
+
+@Composable
+fun Divider() {
+    Box(Modifier.width(6.dp))
 }
