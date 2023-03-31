@@ -8,18 +8,23 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.flydata.ui.theme.BackgroundColor
+import com.flydata.ui.theme.FlightCardViewmodel
 import com.flydata.ui.theme.FlydataTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContent {
             FlydataTheme {
@@ -38,9 +43,8 @@ class MainActivity : ComponentActivity() {
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             Text("SkyWatch", fontSize = 32.sp)
-                            Text("Det nærmeste (3.2km) flyet er: ")
+                            Text("Det nærmeste flyet er: ")
                         }
-
                         FlightCard()
                     }
                 }
@@ -55,15 +59,17 @@ data class TimeTables(val origin: TimeTable, val destination: TimeTable)
 
 // TODO: FlightCard tar f.eks. inn icao24, gjør API-uthentinger, bytt ut hardkodede verdier
 @Composable
-fun FlightCard() {
+fun FlightCard(flightViewModel: FlightCardViewmodel = viewModel()) {
+    val flightUIState by flightViewModel.flightCardUiState.collectAsState()
+
     val timeTables = TimeTables(TimeTable("14:05", "14:31"), TimeTable("16:20", "16:46"))
 
     Column(
         Modifier.padding(bottom = 100.dp),
         verticalArrangement = Arrangement.Center,
     ) {
-        Text("DLH2VC", fontWeight = FontWeight.Bold)
-        Text("Norwegian", color = Color.Gray)
+        Text("${flightUIState.distance} km", fontWeight = FontWeight.Bold)
+        Text("${flightUIState.callsign}", color = Color.Gray)
         Text("787-9 Dreamliner")
 
         // TODO: Finn dynamisk måte å hente bilde. Alternativt fjern bildet
