@@ -62,14 +62,17 @@ data class TimeTables(val origin: TimeTable, val destination: TimeTable)
 fun FlightCard(flightViewModel: FlightCardViewmodel = viewModel()) {
     val flightUIState by flightViewModel.flightCardUiState.collectAsState()
 
-    val timeTables = TimeTables(TimeTable("14:05", "14:31"), TimeTable("16:20", "16:46"))
+    val timeTables = TimeTables(
+        TimeTable(flightUIState.departureScheduleTime, flightUIState.departureActualTime),
+        TimeTable(flightUIState.destinationScheduleTime, flightUIState.destinationActualTime)
+    )
 
     Column(
         Modifier.padding(bottom = 100.dp),
         verticalArrangement = Arrangement.Center,
     ) {
         Text("${flightUIState.distance} km", fontWeight = FontWeight.Bold)
-        Text("${flightUIState.callsign}", color = Color.Gray)
+        Text("${flightUIState.flightId}", color = Color.Gray)
         Text("787-9 Dreamliner")
 
         // TODO: Finn dynamisk måte å hente bilde. Alternativt fjern bildet
@@ -84,8 +87,8 @@ fun FlightCard(flightViewModel: FlightCardViewmodel = viewModel()) {
         Row {
             AirportInfo(
                 false,
-                "EDDF",
-                "Frankfurt",
+                flightUIState.departureAirport,
+                "(flyplassnavn)",
                 timeTables.origin,
                 modifier = Modifier
                     .weight(1f)
@@ -94,8 +97,8 @@ fun FlightCard(flightViewModel: FlightCardViewmodel = viewModel()) {
             Divider()
             AirportInfo(
                 true,
-                "ESSA",
-                "Stockholm Arlanda",
+                flightUIState.destinationAirport,
+                "(flyplassnavn)",
                 timeTables.destination,
                 modifier = Modifier
                     .weight(1f)

@@ -1,9 +1,8 @@
 package com.flydata.ui.theme
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.flydata.FlightCardUiState
-import com.flydata.data.FlightDatasource
+import com.flydata.data.FlightsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class FlightCardViewmodel : ViewModel() {
-    private val data = FlightDatasource()
+    private var flightsRepository = FlightsRepository()
     private val _flightCardUiState = MutableStateFlow(FlightCardUiState())
 
     val flightCardUiState: StateFlow<FlightCardUiState> = _flightCardUiState.asStateFlow()
@@ -23,14 +22,17 @@ class FlightCardViewmodel : ViewModel() {
 
     fun getFlights() {
         CoroutineScope(Dispatchers.IO).launch {
-            var data = FlightDatasource()
-            var flights = data.fetchFlights()
-            for (flight in flights) {
-                Log.d("DEBUG", flight.toString())
-            }
+            var nearestFlight = flightsRepository.fetchNearestFlight()
+
             _flightCardUiState.value = FlightCardUiState(
-                flights[0].distance,
-                flights[0].callsign
+                nearestFlight.flightId,
+                nearestFlight.departureAirport ?: "Ukjent",
+                nearestFlight.departureScheduleTime ?: "Ukjent",
+                nearestFlight.departureActualTime ?: "Ukjent",
+                nearestFlight.destinationAirport ?: "Ukjent",
+                nearestFlight.destinationScheduleTime ?: "Ukjent",
+                nearestFlight.destinationActualTime ?: "Ukjent",
+                nearestFlight.distance
             )
         }
     }
