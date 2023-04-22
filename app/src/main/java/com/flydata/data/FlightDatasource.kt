@@ -6,11 +6,11 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-class FlightsDatasource {
+class FlightDatasource {
     // posisjonen til IFI
     private val location: Location = Location("").apply {
-        this.latitude = 59.94325070410129
-        this.longitude = 10.717822698554867
+        this.latitude = 59.943
+        this.longitude = 10.717
     }
 
     // koordinatene til et rektangel som innkapsler Norge
@@ -24,8 +24,11 @@ class FlightsDatasource {
 
     // API-parametere
     private val client = OkHttpClient()
-    private val apiKey = "c84c80bcd2msh7ab2dcca088ddddp1c32f8jsnd02e4bc7bdb4"
+    private val apiKey = "a99e562597mshbe090cf3e3b5311p1a1fd9jsn321697274c18"
     private val baseUrl = "https://flight-radar1.p.rapidapi.com"
+
+    // cache
+    private var flightCache: MutableList<FlightDetails> = mutableListOf()
 
     fun fetchNearestFlight(): FlightDetails {
         // gjør uthenting av fly-liste
@@ -52,7 +55,7 @@ class FlightsDatasource {
         return flightDetails
     }
 
-    private fun fetchFlightList(): FlightList {
+    fun fetchFlightList(): FlightList {
         // JSON-deserialiserer til FLightList-klassen
         val adapter = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
             .adapter(FlightList::class.java)
@@ -77,7 +80,15 @@ class FlightsDatasource {
         }
     }
 
-    private fun fetchFlightDetails(flightId: String): FlightDetails {
+    fun fetchFlightDetails(flightId: String): FlightDetails {
+        // sjekk om flightDetails ligger i cache
+        val potentialFlight = flightCache.find { flightDetails ->
+            flightDetails.identification.id == flightId
+        }
+        if (potentialFlight != null) {
+            return potentialFlight
+        }
+
         // JSON-deserialiserer til FLightDetails-klassen
         val adapter = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
             .adapter(FlightDetails::class.java)
@@ -93,7 +104,11 @@ class FlightsDatasource {
         val response = client.newCall(request).execute()
         val responseBody = response.body?.string()
         if (responseBody != null) {
-            return adapter.fromJson(responseBody)!!
+            val flight = adapter.fromJson(responseBody)!!
+
+            // legg til flight i cache og returner
+            flightCache.add(flight)
+            return flight
         } else {
             throw Exception("Response body is null")
         }
