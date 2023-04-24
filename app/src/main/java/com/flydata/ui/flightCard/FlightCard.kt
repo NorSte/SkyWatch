@@ -4,10 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -58,12 +55,19 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
                         Row {
                             Text(
                                 flightUIState.identification.callsign,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight =
                                 FontWeight.Bold
                             )
-                            Text(", " + flightUIState.airline.short, color = Color.Gray)
+                            Text(
+                                ", " + flightUIState.airline.short,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
                         }
-                        Text("Type: ${flightUIState.aircraft.model.code}", color = Color.Gray)
+                        Text(
+                            "Type: ${flightUIState.aircraft.model.code}",
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
                     }
                     IconButton(onClick = { mainScreenViewmodel.dismissFlight() }) {
                         Icon(
@@ -91,7 +95,7 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
                         timeTables.origin,
                         modifier = Modifier
                             .weight(1f)
-                            .background(Color.White)
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
                     )
                     Divider()
                     AirportInfo(
@@ -100,7 +104,7 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
                         timeTables.destination,
                         modifier = Modifier
                             .weight(1f)
-                            .background(Color.White)
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
                     )
                 }
             }
@@ -131,15 +135,21 @@ fun AirportInfo(
         ) {
             Text(
                 if (isDestinationAirport) "TIL" else "FRA",
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 10.sp,
             )
-            Text(airport.code.iata, fontWeight = FontWeight.Bold)
+            Text(
+                airport.code.iata,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontWeight = FontWeight.Bold
+            )
 
             val lastIndexOfSpace = airport.name.lastIndexOf(" ")
             Text(
                 if (lastIndexOfSpace == -1) {
                     airport.name
-                } else airport.name.substring(0, lastIndexOfSpace)
+                } else airport.name.substring(0, lastIndexOfSpace),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         Time(
@@ -165,12 +175,15 @@ fun Time(isPlanned: Boolean, time: String) {
         Modifier
             .fillMaxWidth()
             .padding(bottom = 5.dp)
-            .background(Color(0XFFEBEBEB))
+            .background(MaterialTheme.colorScheme.outline)
             .padding(5.dp),
         Arrangement.SpaceBetween
     ) {
-        Text(if (isPlanned) "Planlagt" else "Forventet")
-        Text(time, fontWeight = FontWeight.Bold)
+        Text(
+            if (isPlanned) "Planlagt" else "Forventet",
+            color = MaterialTheme.colorScheme.onPrimary
+        )
+        Text(time, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
     }
 }
 
