@@ -5,6 +5,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.flydata.ui.airportCard.AirportCard
 import com.flydata.ui.flightCard.FlightCard
 import com.flydata.ui.flightMap.FlightMap
 
@@ -21,17 +22,19 @@ fun MainScreen() {
     ) {
         Box(Modifier.fillMaxSize()) {
             FlightMap(mainScreenViewmodel)
-            if (mainScreenUIState.isFlightDisplayed) {
-                Box(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(32.dp),
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .padding(32.dp),
+            ) {
+                Column(
+                    Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.SpaceAround
                 ) {
-                    Column(
-                        Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.SpaceAround
-                    ) {
+                    if (mainScreenUIState.currentlyDisplayed == CurrentlyDisplayed.FLIGHT) {
                         FlightCard(mainScreenViewmodel)
+                    } else if (mainScreenUIState.currentlyDisplayed == CurrentlyDisplayed.AIRPORT) {
+                        AirportCard(mainScreenViewmodel)
                     }
                 }
             }

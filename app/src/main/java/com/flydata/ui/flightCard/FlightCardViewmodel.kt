@@ -1,8 +1,8 @@
 package com.flydata.ui.flightCard
 
 import androidx.lifecycle.ViewModel
-import com.flydata.data.FlightDatasource
-import com.flydata.data.FlightDetails
+import com.flydata.data.flight.FlightDatasource
+import com.flydata.data.flight.FlightDetails
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -1,7 +1,7 @@
 package com.flydata.ui.flightMap
 
-import com.flydata.data.FlightDatasource
-import com.flydata.data.FlightList
+import com.flydata.data.flight.FlightDatasource
+import com.flydata.data.flight.FlightList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

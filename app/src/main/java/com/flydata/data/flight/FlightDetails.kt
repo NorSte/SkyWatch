@@ -1,4 +1,4 @@
-package com.flydata.data
+package com.flydata.data.flight
 
 data class FlightList(
     val aircraft: List<List<String>> = emptyList()

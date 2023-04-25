@@ -1,6 +1,7 @@
 package com.flydata.ui.flightCard
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -12,7 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.flydata.data.AirportIdentification
+import com.flydata.data.flight.AirportIdentification
 import com.flydata.ui.mainScreen.MainScreenViewmodel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -43,7 +44,7 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
     Card(
         Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp),
+            .padding(vertical = 12.dp)
     ) {
         if (flightUIState.identification.id != "N/A") {
             Column(Modifier.padding(vertical = 12.dp)) {
@@ -69,7 +70,7 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }
-                    IconButton(onClick = { mainScreenViewmodel.dismissFlight() }) {
+                    IconButton(onClick = { mainScreenViewmodel.dismissCard() }) {
                         Icon(
                             Icons.Default.Close,
                             contentDescription = "Close",
@@ -88,23 +89,24 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
                     )
                 }
 
-                Row {
+                Row(Modifier.fillMaxWidth()) {
                     AirportInfo(
+                        mainScreenViewmodel,
                         false,
                         flightUIState.airport.origin ?: AirportIdentification(),
                         timeTables.origin,
-                        modifier = Modifier
+                        Modifier
                             .weight(1f)
-                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                            .padding(5.dp)
                     )
-                    Divider()
                     AirportInfo(
+                        mainScreenViewmodel,
                         true,
                         flightUIState.airport.destination ?: AirportIdentification(),
                         timeTables.destination,
-                        modifier = Modifier
+                        Modifier
                             .weight(1f)
-                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                            .padding(5.dp)
                     )
                 }
             }
@@ -121,40 +123,45 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AirportInfo(
+    mainScreenViewmodel: MainScreenViewmodel,
     isDestinationAirport: Boolean,
     airport: AirportIdentification,
     timeTable: TimeTable,
-    modifier: Modifier = Modifier
+    modifier: Modifier
 ) {
     Column(modifier) {
-        Column(
-            Modifier
-                .padding(5.dp)
-        ) {
-            Text(
-                if (isDestinationAirport) "TIL" else "FRA",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 10.sp,
-            )
-            Text(
-                airport.code.iata,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontWeight = FontWeight.Bold
-            )
+        Text(
+            if (isDestinationAirport) "TIL" else "FRA",
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontSize = 10.sp,
+        )
 
-            val lastIndexOfSpace = airport.name.lastIndexOf(" ")
-            Text(
-                if (lastIndexOfSpace == -1) {
-                    airport.name
-                } else airport.name.substring(0, lastIndexOfSpace),
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
+        Text(
+            text = airport.code.iata,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.clickable {
+                mainScreenViewmodel.updateDisplayedAirport(airport.code.iata)
+                mainScreenViewmodel.displayAirport()
+            }
+        )
+
+        val lastIndexOfSpace = airport.name.lastIndexOf(" ")
+        Text(
+            if (lastIndexOfSpace == -1) {
+                airport.name
+            } else airport.name.substring(0, lastIndexOfSpace),
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
         Time(
             true,
-            SimpleDateFormat("HH:mm", Locale("no", "NO")).format(Date(timeTable.expected * 1000))
+            SimpleDateFormat(
+                "HH:mm",
+                Locale("no", "NO")
+            ).format(Date(timeTable.expected * 1000))
         )
         Time(
             false,
@@ -175,7 +182,7 @@ fun Time(isPlanned: Boolean, time: String) {
         Modifier
             .fillMaxWidth()
             .padding(bottom = 5.dp)
-            .background(MaterialTheme.colorScheme.outline)
+            .background(MaterialTheme.colorScheme.inversePrimary)
             .padding(5.dp),
         Arrangement.SpaceBetween
     ) {
@@ -185,9 +192,4 @@ fun Time(isPlanned: Boolean, time: String) {
         )
         Text(time, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
     }
-}
-
-@Composable
-fun Divider() {
-    Box(Modifier.width(6.dp))
 }

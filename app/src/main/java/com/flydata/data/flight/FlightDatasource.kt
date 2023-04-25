@@ -1,4 +1,4 @@
-package com.flydata.data
+package com.flydata.data.flight
 
 import android.location.Location
 import com.squareup.moshi.Moshi
@@ -80,10 +80,10 @@ class FlightDatasource {
         }
     }
 
-    fun fetchFlightDetails(flightId: String): FlightDetails {
+    fun fetchFlightDetails(icao24: String): FlightDetails {
         // sjekk om flightDetails ligger i cache
         val potentialFlight = flightCache.find { flightDetails ->
-            flightDetails.identification.id == flightId
+            flightDetails.identification.id == icao24
         }
         if (potentialFlight != null) {
             return potentialFlight
@@ -95,7 +95,7 @@ class FlightDatasource {
 
         // API-forespørsel for å hente detaljer om et gitt fly utifra icao24
         val request = Request.Builder()
-            .url("$baseUrl/flights/detail?flight=$flightId")
+            .url("$baseUrl/flights/detail?flight=$icao24")
             .get()
             .addHeader("X-RapidAPI-Key", apiKey)
             .build()

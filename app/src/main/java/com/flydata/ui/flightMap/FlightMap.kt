@@ -30,7 +30,7 @@ fun FlightMap(mainScreenViewmodel: MainScreenViewmodel) {
 
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
-        onMapClick = { mainScreenViewmodel.dismissFlight() },
+        onMapClick = { mainScreenViewmodel.dismissCard() },
         cameraPositionState = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(
                 LatLng(59.943, 10.717),
