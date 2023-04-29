@@ -4,11 +4,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -29,7 +31,7 @@ fun AirportCard(
             )
         )
     }
-    val airportUIState by airportViewmodel.airportScreenUiState.collectAsState()
+    val airportUIState by airportViewmodel.airportCardUIState.collectAsState()
 
     Card(
         Modifier
@@ -56,12 +58,15 @@ fun AirportCard(
             Row {
                 Text(airportUIState.airportCode, fontSize = 32.sp, fontWeight = FontWeight.Bold)
                 Text(
-                    ", " + airportUIState.airportName,
+                    ", " + airportNamesMap[airportUIState.airportCode],
                     fontSize = 32.sp,
                     color = Color.Gray
                 )
             }
-            FlightTable(tablelist = airportUIState.airportFlights)
+            FlightTable(
+                tablelist = airportUIState.airportFlights,
+                airportCardViewmodel = airportViewmodel
+            )
         } else {
             Row(
                 Modifier
@@ -76,7 +81,15 @@ fun AirportCard(
 }
 
 @Composable
-fun FlightTable(tablelist: List<AirportFlight>) {
+fun FlightTable(tablelist: List<AirportFlight>, airportCardViewmodel: AirportCardViewmodel) {
+    val statusMessages = mapOf(
+        "N" to "Ny info",
+        "E" to "Ny tid",
+        "D" to "Avreist",
+        "A" to "Landet",
+        "C" to "Innstilt"
+    )
+    val maxColumnWeigfht = 4f
     val mediumColumnWeight = 3f
     val minColumnWeight = 2f
     Column(
@@ -93,13 +106,38 @@ fun FlightTable(tablelist: List<AirportFlight>) {
                 Text("Ingen flydata tilgjengelig for denne flyplassen")
             }
         } else {
+            Row {
+                val radioOptions = listOf(TypeOfListing.DEPARTURE, TypeOfListing.ARRIVAL)
+                val (selected, onSelected) = remember { mutableStateOf(radioOptions[0]) }
+                radioOptions.forEach { type ->
+                    Row(
+                        Modifier.selectable(
+                            selected = (type == selected),
+                            onClick = {
+                                onSelected(type)
+                                airportCardViewmodel.changeTypeOfListing(type)
+                            }
+                        ),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = (type == selected),
+                            onClick = {
+                                onSelected(type)
+                                airportCardViewmodel.changeTypeOfListing(type)
+                            }
+                        )
+                        Text(if (type == TypeOfListing.ARRIVAL) "Ankomster" else "Avganger")
+                    }
+                }
+            }
             Row(
                 Modifier
                     .background(MaterialTheme.colorScheme.inversePrimary)
                     .padding(6.dp)
             ) {
-                Text("Til", Modifier.weight(minColumnWeight), fontWeight = FontWeight.Bold)
-                Text("Tid", Modifier.weight(mediumColumnWeight), fontWeight = FontWeight.Bold)
+                Text("Til", Modifier.weight(maxColumnWeigfht), fontWeight = FontWeight.Bold)
+                Text("Tid", Modifier.weight(minColumnWeight), fontWeight = FontWeight.Bold)
                 Text("Flight", Modifier.weight(mediumColumnWeight), fontWeight = FontWeight.Bold)
                 Text("Status", Modifier.weight(mediumColumnWeight), fontWeight = FontWeight.Bold)
             }
@@ -107,8 +145,11 @@ fun FlightTable(tablelist: List<AirportFlight>) {
             LazyColumn(Modifier.padding(6.dp)) {
                 items(tablelist) { flight ->
                     Row(Modifier.fillMaxWidth()) {
-                        Text(flight.airport, Modifier.weight(minColumnWeight))
-                        Column(Modifier.weight(mediumColumnWeight)) {
+                        Text(
+                            airportNamesMap[flight.airport] ?: flight.airport,
+                            Modifier.weight(maxColumnWeigfht)
+                        )
+                        Column(Modifier.weight(minColumnWeight)) {
                             Text(flight.scheduleTime, fontWeight = FontWeight.Bold)
                             Text(flight.statusTime)
                         }
@@ -117,7 +158,10 @@ fun FlightTable(tablelist: List<AirportFlight>) {
                             Modifier.weight(mediumColumnWeight),
                             fontWeight = FontWeight.Bold
                         )
-                        Text(flight.statusText, Modifier.weight(mediumColumnWeight))
+                        Text(
+                            statusMessages[flight.statusText] ?: "",
+                            Modifier.weight(mediumColumnWeight)
+                        )
                     }
                     Box(
                         Modifier
