@@ -11,8 +11,8 @@ import kotlinx.coroutines.launch
 
 class AirportCardViewmodel(private val airportDatasource: AirportDatasource, iata: String = "") :
     ViewModel() {
-    private val _airportScreenUiState = MutableStateFlow(AirportCardUIState())
-    val airportScreenUiState: StateFlow<AirportCardUIState> = _airportScreenUiState.asStateFlow()
+    private val _airportCardUiState = MutableStateFlow(AirportCardUIState())
+    val airportCardUIState: StateFlow<AirportCardUIState> = _airportCardUiState.asStateFlow()
 
     init {
         if (iata == "") {
@@ -24,12 +24,26 @@ class AirportCardViewmodel(private val airportDatasource: AirportDatasource, iat
 
     private fun getAirportFlights(iata: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            _airportScreenUiState.value = AirportCardUIState(
+            _airportCardUiState.value = AirportCardUIState(
                 airportDatasource.fetchAirportFlights(
-                    iata
+                    iata,
+                    airportCardUIState.value.typeOfListing
                 ),
-                "Navn",
+                airportCardUIState.value.airportName,
                 iata
+            )
+        }
+    }
+
+    fun changeTypeOfListing(typeOfListing: TypeOfListing) {
+        CoroutineScope(Dispatchers.IO).launch {
+            _airportCardUiState.value = AirportCardUIState(
+                airportDatasource.fetchAirportFlights(
+                    airportCardUIState.value.airportCode,
+                    typeOfListing
+                ),
+                airportCardUIState.value.airportName,
+                airportCardUIState.value.airportCode
             )
         }
     }

@@ -21,7 +21,7 @@ class MainScreenViewmodel : ViewModel() {
     private val _mainScreenUIState = MutableStateFlow(MainScreenUIState())
     val mainScreenUIState: StateFlow<MainScreenUIState> = _mainScreenUIState.asStateFlow()
 
-    private var currentlyDisplayed by mutableStateOf(CurrentlyDisplayed.AIRPORT)
+    private var currentlyDisplayed by mutableStateOf(CurrentlyDisplayed.FLIGHT)
     private var displayedFlightIcao24 by mutableStateOf("")
     private var displayedAirportIata by mutableStateOf("")
 
