@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flydata.data.airport.AirportDatasource
+import com.flydata.data.airport.MetarDataSource
 import com.flydata.data.flight.FlightDatasource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +18,7 @@ import kotlinx.coroutines.launch
 class MainScreenViewmodel : ViewModel() {
     val flightDatasource = FlightDatasource()
     val airportDatasource = AirportDatasource()
+    val tafmetardatasource = MetarDataSource()
 
     private val _mainScreenUIState = MutableStateFlow(MainScreenUIState())
     val mainScreenUIState: StateFlow<MainScreenUIState> = _mainScreenUIState.asStateFlow()

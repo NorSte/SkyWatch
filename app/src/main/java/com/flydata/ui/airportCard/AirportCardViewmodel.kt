@@ -2,6 +2,7 @@ package com.flydata.ui.airportCard
 
 import androidx.lifecycle.ViewModel
 import com.flydata.data.airport.AirportDatasource
+import com.flydata.data.airport.MetarDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -9,8 +10,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class AirportCardViewmodel(private val airportDatasource: AirportDatasource, iata: String = "") :
-    ViewModel() {
+class AirportCardViewmodel(
+    private val airportDatasource: AirportDatasource,
+    iata: String = "",
+    private val tafmetardatasource: MetarDataSource
+) : ViewModel() {
+
     private val _airportCardUiState = MutableStateFlow(AirportCardUIState())
     val airportCardUIState: StateFlow<AirportCardUIState> = _airportCardUiState.asStateFlow()
 
@@ -30,7 +35,8 @@ class AirportCardViewmodel(private val airportDatasource: AirportDatasource, iat
                     airportCardUIState.value.typeOfListing
                 ),
                 airportCardUIState.value.airportName,
-                iata
+                iata,
+                airportWeather = tafmetardatasource.getTafmetar("ENGM")
             )
         }
     }

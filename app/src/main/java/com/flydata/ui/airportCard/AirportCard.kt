@@ -27,7 +27,8 @@ fun AirportCard(
         mutableStateOf(
             AirportCardViewmodel(
                 mainScreenViewmodel.airportDatasource,
-                mainScreenViewmodel.mainScreenUIState.value.displayedAirportIata
+                mainScreenViewmodel.mainScreenUIState.value.displayedAirportIata,
+                mainScreenViewmodel.tafmetardatasource
             )
         )
     }
@@ -63,6 +64,12 @@ fun AirportCard(
                     color = Color.Gray
                 )
             }
+
+            Column() {
+                Text("Vind: ${airportUIState.airportWeather.wind}, Retning: ${airportUIState.airportWeather.direction}")
+                // Text(text = "")
+            }
+
             FlightTable(
                 tablelist = airportUIState.airportFlights,
                 airportCardViewmodel = airportViewmodel
