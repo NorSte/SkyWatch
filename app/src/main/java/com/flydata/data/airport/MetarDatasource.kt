@@ -12,7 +12,7 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import java.io.InputStream
 
-class MetarDataSource {
+class MetarDatasource {
 
     private val client = HttpClient() {}
 

@@ -2,6 +2,7 @@ package com.flydata.ui.flightMap
 
 import com.flydata.data.flight.FlightDatasource
 import com.flydata.data.flight.FlightList
+import com.flydata.ui.mainScreen.MainScreenViewmodel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,7 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class FlightMapViewmodel {
-    private val flightDatasource = FlightDatasource()
+    private val flightDatasource = FlightDatasource(MainScreenViewmodel())
     private val _flightMapUIState = MutableStateFlow(FlightList())
     val flightMapUiState: StateFlow<FlightList> = _flightMapUIState.asStateFlow()
 

@@ -28,7 +28,8 @@ fun AirportCard(
             AirportCardViewmodel(
                 mainScreenViewmodel.airportDatasource,
                 mainScreenViewmodel.mainScreenUIState.value.displayedAirportIata,
-                mainScreenViewmodel.tafmetardatasource
+                mainScreenViewmodel.tafmetardatasource,
+                mainScreenViewmodel.mainScreenUIState.value.displayedAirportIcao
             )
         )
     }
@@ -65,10 +66,10 @@ fun AirportCard(
                 )
             }
 
-            Column() {
-                Text("Vind: ${airportUIState.airportWeather.wind}, Retning: ${airportUIState.airportWeather.direction}")
-                // Text(text = "")
-            }
+            Text(
+                "Vind: ${airportUIState.airportWeather.wind}, " +
+                    "Retning: ${airportUIState.airportWeather.direction}"
+            )
 
             FlightTable(
                 tablelist = airportUIState.airportFlights,

@@ -12,5 +12,6 @@ data class AirportCardUIState(
     val airportName: String = "",
     val airportCode: String = "",
     val typeOfListing: TypeOfListing = TypeOfListing.DEPARTURE,
-    val airportWeather: Weather = Weather("", "")
+    val airportWeather: Weather = Weather("", ""),
+    val airportIcao: String = ""
 )
