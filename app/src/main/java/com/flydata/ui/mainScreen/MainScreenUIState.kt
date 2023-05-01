@@ -7,5 +7,7 @@ enum class CurrentlyDisplayed {
 data class MainScreenUIState(
     var currentlyDisplayed: CurrentlyDisplayed = CurrentlyDisplayed.FLIGHT,
     var displayedFlightIcao24: String = "",
-    var displayedAirportIata: String = ""
+    var displayedAirportIata: String = "",
+    var sigmetMessage: String = "",
+    var displayedAirportIcao: String = "",
 )

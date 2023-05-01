@@ -6,7 +6,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flydata.data.airport.AirportDatasource
-import com.flydata.data.airport.MetarDataSource
+import com.flydata.data.airport.MetarDatasource
+import com.flydata.data.airport.SigmetDatasource
 import com.flydata.data.flight.FlightDatasource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,10 +16,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+data class AirportIdentification(val iata: String, val icao: String, val name: String)
+
 class MainScreenViewmodel : ViewModel() {
-    val flightDatasource = FlightDatasource()
+    val flightDatasource = FlightDatasource(this)
     val airportDatasource = AirportDatasource()
-    val tafmetardatasource = MetarDataSource()
+    val tafmetardatasource = MetarDatasource()
+    private val sigmetdatasource = SigmetDatasource()
 
     private val _mainScreenUIState = MutableStateFlow(MainScreenUIState())
     val mainScreenUIState: StateFlow<MainScreenUIState> = _mainScreenUIState.asStateFlow()
@@ -27,13 +31,31 @@ class MainScreenViewmodel : ViewModel() {
     private var displayedFlightIcao24 by mutableStateOf("")
     private var displayedAirportIata by mutableStateOf("")
 
+    private var airportIdentificationRepository: MutableList<AirportIdentification> =
+        mutableListOf()
+
+    fun addIdentification(airportIdentification: AirportIdentification) {
+        val potentialIdentification =
+            airportIdentificationRepository.find { it.iata == airportIdentification.iata }
+        if (potentialIdentification == null) {
+            airportIdentificationRepository.add(airportIdentification)
+        }
+    }
+
+    fun getIcaoFrom(iata: String): String {
+        val potentialIdentification = airportIdentificationRepository.find { it.iata == iata }
+        return potentialIdentification?.icao ?: "ENGM"
+    }
+
     private fun updateUIState() {
         viewModelScope.launch(Dispatchers.IO) {
             _mainScreenUIState.update { currentState ->
                 currentState.copy(
                     currentlyDisplayed = currentlyDisplayed,
                     displayedFlightIcao24 = displayedFlightIcao24,
-                    displayedAirportIata = displayedAirportIata
+                    displayedAirportIata = displayedAirportIata,
+                    sigmetMessage = sigmetdatasource.getSigmet(),
+                    displayedAirportIcao = getIcaoFrom(displayedAirportIata)
                 )
             }
         }
