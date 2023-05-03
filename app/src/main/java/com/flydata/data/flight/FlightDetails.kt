@@ -50,7 +50,8 @@ data class AirportIdentification(
 )
 
 data class Code(
-    val iata: String = "N/A"
+    val iata: String = "N/A",
+    val icao: String = "N/A"
 )
 
 data class Times(

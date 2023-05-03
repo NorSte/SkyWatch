@@ -1,12 +1,14 @@
 package com.flydata.data.flight
 
 import android.location.Location
+import com.flydata.ui.mainScreen.AirportIdentification
+import com.flydata.ui.mainScreen.MainScreenViewmodel
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-class FlightDatasource {
+class FlightDatasource(private val mainScreenViewmodel: MainScreenViewmodel) {
     // posisjonen til IFI
     private val location: Location = Location("").apply {
         this.latitude = 59.943
@@ -105,6 +107,21 @@ class FlightDatasource {
         val responseBody = response.body?.string()
         if (responseBody != null) {
             val flight = adapter.fromJson(responseBody)!!
+
+            // legger flyplassinformasjon som bare kan hentes fra dette API-et i flyplass repository
+            val iataOrigin = flight.airport.origin?.code?.iata ?: "OSL"
+            val icaoOrigin = flight.airport.origin?.code?.icao ?: "ENGM"
+            val nameOrigin = flight.airport.origin?.name ?: "Oslo Lufthavn"
+            val iataDestination = flight.airport.destination?.code?.iata ?: "OSL"
+            val icaoDestination = flight.airport.destination?.code?.icao ?: "ENGM"
+            val nameDestination = flight.airport.destination?.name ?: "Oslo Lufthavn"
+
+            val originIdentification = AirportIdentification(iataOrigin, icaoOrigin, nameOrigin)
+            val destinationIdentification =
+                AirportIdentification(iataDestination, icaoDestination, nameDestination)
+
+            mainScreenViewmodel.addIdentification(originIdentification)
+            mainScreenViewmodel.addIdentification(destinationIdentification)
 
             // legg til flight i cache og returner
             flightCache.add(flight)

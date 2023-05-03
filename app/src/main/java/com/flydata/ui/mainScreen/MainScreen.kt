@@ -4,9 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,12 +17,15 @@ import com.flydata.R
 import com.flydata.ui.airportCard.AirportCard
 import com.flydata.ui.flightCard.FlightCard
 import com.flydata.ui.flightMap.FlightMap
+import kotlinx.coroutines.launch
 
 @Composable
 fun MainScreen() {
     val mainScreenViewmodel by remember { mutableStateOf(MainScreenViewmodel()) }
     val mainScreenUIState by mainScreenViewmodel.mainScreenUIState.collectAsState()
-    var isPilot by remember { mutableStateOf(false) }
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -65,48 +66,60 @@ fun MainScreen() {
                 },
                 modifier = Modifier
                     .weight(1f)
+                    .padding(start = 4.dp, end = 4.dp)
 
             ) {
                 Text("SjekkFly",)
             }
 
-            // Pilot switch
-            Row(
+            // Sigmet meldingsknapp
+            Button(
+                onClick = {
+                    // show snackbar as a suspend function
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            if (mainScreenUIState.sigmetMessage == "") {
+                                "Ingen trusler nå"
+                            } else {
+                                mainScreenUIState.sigmetMessage
+                            }
+                        )
+                    }
+                },
                 modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End
-            ) {
-                Text(text = "Pilot?")
+                    .weight(1f)
+                    .padding(end = 4.dp)
 
-                Switch(
-                    checked = isPilot,
-                    onCheckedChange = { isPilot = it },
-                    modifier = Modifier
-                        .padding(start = 8.dp, end = 8.dp),
-                )
+            ) {
+                Text("Værtrusler",)
             }
         }
-        // Start av flightmap
-        Box(Modifier.fillMaxSize()) {
-            FlightMap(mainScreenViewmodel)
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .padding(32.dp),
-            ) {
-                Column(
-                    Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.SpaceAround
-                ) {
-                    if (mainScreenUIState.currentlyDisplayed == CurrentlyDisplayed.FLIGHT) {
-                        FlightCard(mainScreenViewmodel)
-                    } else if (mainScreenUIState.currentlyDisplayed == CurrentlyDisplayed.AIRPORT) {
-                        AirportCard(mainScreenViewmodel)
+        // Start av flightmap med snackbar i tillegg
+        Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+            content = {
+                Box(Modifier.fillMaxSize()) {
+                    FlightMap(mainScreenViewmodel)
+                    Box(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(32.dp),
+                    ) {
+                        Column(
+                            Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.SpaceAround
+                        ) {
+                            if (mainScreenUIState.currentlyDisplayed == CurrentlyDisplayed.FLIGHT) {
+                                FlightCard(mainScreenViewmodel)
+                            } else if (mainScreenUIState.currentlyDisplayed
+                                == CurrentlyDisplayed.AIRPORT
+                            ) {
+                                AirportCard(mainScreenViewmodel)
+                            }
+                        }
                     }
                 }
             }
-        }
+        )
     }
 }
