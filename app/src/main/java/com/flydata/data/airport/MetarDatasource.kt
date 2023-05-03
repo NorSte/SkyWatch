@@ -1,12 +1,5 @@
 package com.flydata.data.airport
 
-/* 0kHttp bibliotek: ...
-import java.io.InputStream
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-*/
-
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -14,9 +7,8 @@ import java.io.InputStream
 
 class MetarDatasource {
 
-    private val client = HttpClient() {}
+    private val client = HttpClient {}
 
-    // private val client1 = OkHttpClient()
     private val baseUrl = "https://api.met.no/weatherapi/tafmetar/1.0/?" +
         "content_type=text/xml&date=2023-03-31&offset=+02:00&content=metar" +
         "&icao="
@@ -29,41 +21,26 @@ class MetarDatasource {
         val inputStream: InputStream = response.byteInputStream() // til byte
         val listOfMetar: List<Metar> = MetarXmlParser().parse(inputStream)
 
-        // Til bruk av 0khttp biblioteket...
-        /*val request = Request.Builder()
-            .url(url)
-            .get()
-            .build()
-        val response1: Response = client1.newCall(request).execute()
-        val responseBody = response1.body?.string()
-
-        val inputStream1: InputStream? = responseBody?.byteInputStream() // til byte
-        val listOfMetar1: List<Metar> = MetarXmlParser().parse(inputStream1)*/
-
-        // return MetarDecoder(listOfMetar1.last().metarText)
-
-        return MetarDecoder(listOfMetar.last().metarText)
+        return metarDecoder(listOfMetar.last().metarText)
     }
 
-    private fun MetarDecoder(text: String?): Weather {
+    private fun metarDecoder(text: String?): Weather {
         // i form ENGM 310350Z 03006KT CAVOK M02/M07 Q1004 NOSIG=
         // det er mulighet for videre dekoding, til og med temperatur
 
         if (text == null) { return Weather(".", ".") }
         val words = text.split("\\s+".toRegex())
-        var airport = words[0]
         var direction = "."
         var wind = "."
 
         for (word in words) {
-            // var aa = word.take(6)
-            var bb = word.takeLast(2)
+            val knots = word.takeLast(2)
 
-            if (bb == "KT") {
+            if (knots == "KT") {
                 // 05007G17KT
-                var aa = word.take(5)
-                direction = aa.take(3)
-                wind = aa.takeLast(2)
+                val knotNumber = word.take(5)
+                direction = knotNumber.take(3)
+                wind = knotNumber.takeLast(2)
             }
         }
 

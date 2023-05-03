@@ -78,7 +78,6 @@ fun MainScreen() {
                     // show snackbar as a suspend function
                     scope.launch {
                         snackbarHostState.showSnackbar(
-                            // "Snackbar # ${++clickCount}"
                             if (mainScreenUIState.sigmetMessage == "") {
                                 "Ingen trusler nå"
                             } else {

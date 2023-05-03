@@ -42,7 +42,7 @@ class MainScreenViewmodel : ViewModel() {
         }
     }
 
-    fun getIcaoFrom(iata: String): String {
+    private fun getIcaoFrom(iata: String): String {
         val potentialIdentification = airportIdentificationRepository.find { it.iata == iata }
         return potentialIdentification?.icao ?: "ENGM"
     }
