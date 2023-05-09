@@ -1,5 +1,6 @@
 package com.flydata.ui.mainScreen
 
+import android.location.Location
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -19,6 +20,8 @@ import kotlinx.coroutines.launch
 data class AirportIdentification(val iata: String, val icao: String, val name: String)
 
 class MainScreenViewmodel : ViewModel() {
+
+    var deviceLocation = Location("")
     val flightDatasource = FlightDatasource(this)
     val airportDatasource = AirportDatasource()
     val tafmetardatasource = MetarDatasource()
@@ -48,14 +51,14 @@ class MainScreenViewmodel : ViewModel() {
     }
 
     private fun updateUIState() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.Main) {
             _mainScreenUIState.update { currentState ->
                 currentState.copy(
                     currentlyDisplayed = currentlyDisplayed,
                     displayedFlightIcao24 = displayedFlightIcao24,
                     displayedAirportIata = displayedAirportIata,
                     sigmetMessage = sigmetdatasource.getSigmet(),
-                    displayedAirportIcao = getIcaoFrom(displayedAirportIata)
+                    displayedAirportIcao = getIcaoFrom(displayedAirportIata),
                 )
             }
         }
@@ -84,5 +87,9 @@ class MainScreenViewmodel : ViewModel() {
     fun dismissCard() {
         currentlyDisplayed = CurrentlyDisplayed.NONE
         updateUIState()
+    }
+
+    fun updateLocation(location: Location) {
+        deviceLocation = location
     }
 }
