@@ -8,25 +8,31 @@ class AirportNameTest {
     val airportdatasource = AirportDatasource()
 
     @Test
-    fun Name_compressing_Osl() {
-
-        val actual = airportdatasource.AirportNameShortner("Gardermoen Oslo Lufthavn")
-        Assert.assertEquals("Gardermoen Osl..", actual)
+    fun Name_compressing() {
+        val values = mapOf(
+            "Gardermoen Osl.." to
+                airportdatasource.AirportNameShortner("Gardermoen Oslo Lufthavn"),
+            "Paris charles .." to
+                airportdatasource.AirportNameShortner("Paris charles de gaulle airport"),
+            "London Stanste.." to
+                airportdatasource.AirportNameShortner("London Stansted Airport")
+        )
+        values.forEach { entry ->
+            Assert.assertEquals(entry.key, entry.value)
+        }
     }
 
     @Test
-    fun Name_compressing_charles() {
-        //paris charles de gaulle airport
-        val actual = airportdatasource.AirportNameShortner("paris charles de gaulle airport")
-        Assert.assertEquals("paris charles ..", actual)
+    fun Name_compressing_edge() {
+
+        val actual = airportdatasource.AirportNameShortner("Paris")
+        Assert.assertEquals("Paris", actual)
     }
 
     @Test
-    fun Name_compressing_london() {
-        //London Stansted Airport
-        val actual = airportdatasource.AirportNameShortner("London Stansted Airport")
-        Assert.assertEquals("London Stanste..", actual)
+    fun Name_compressing_empty() {
+        // London Stansted Airport
+        val actual = airportdatasource.AirportNameShortner("")
+        Assert.assertEquals("", actual)
     }
-
-
 }
