@@ -58,15 +58,13 @@ class AirportDatasource {
         return filteredAirportFlights
     }
 
-    fun AirportNameShortner(text: String): String {
-        val Maxlenght: Int = 14
+    fun airportNameShortner(text: String): String {
+        val maxlenght = 14
 
-        if (text.length < Maxlenght)
+        if (text.length < maxlenght)
             return text
-        else if (text == "")
-            return ""
 
-        return text.substring(0, Maxlenght) + ".."
+        return text.substring(0, maxlenght) + ".."
     }
 }
 

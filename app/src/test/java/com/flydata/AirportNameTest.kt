@@ -5,17 +5,17 @@ import org.junit.Assert
 import org.junit.Test
 
 class AirportNameTest {
-    val airportdatasource = AirportDatasource()
+    private val airportdatasource = AirportDatasource()
 
     @Test
-    fun Name_compressing() {
+    fun name_compressing() {
         val values = mapOf(
             "Gardermoen Osl.." to
-                airportdatasource.AirportNameShortner("Gardermoen Oslo Lufthavn"),
+                airportdatasource.airportNameShortner("Gardermoen Oslo Lufthavn"),
             "Paris charles .." to
-                airportdatasource.AirportNameShortner("Paris charles de gaulle airport"),
+                airportdatasource.airportNameShortner("Paris charles de gaulle airport"),
             "London Stanste.." to
-                airportdatasource.AirportNameShortner("London Stansted Airport")
+                airportdatasource.airportNameShortner("London Stansted Airport")
         )
         values.forEach { entry ->
             Assert.assertEquals(entry.key, entry.value)
@@ -23,16 +23,16 @@ class AirportNameTest {
     }
 
     @Test
-    fun Name_compressing_edge() {
+    fun name_compressing_edge() {
 
-        val actual = airportdatasource.AirportNameShortner("Paris")
+        val actual = airportdatasource.airportNameShortner("Paris")
         Assert.assertEquals("Paris", actual)
     }
 
     @Test
-    fun Name_compressing_empty() {
+    fun name_compressing_empty() {
         // London Stansted Airport
-        val actual = airportdatasource.AirportNameShortner("")
+        val actual = airportdatasource.airportNameShortner("")
         Assert.assertEquals("", actual)
     }
 }

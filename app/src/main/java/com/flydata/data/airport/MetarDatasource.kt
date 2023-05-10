@@ -28,7 +28,7 @@ class MetarDatasource {
         // i form ENGM 310350Z 03006KT CAVOK M02/M07 Q1004 NOSIG=
         // det er mulighet for videre dekoding, til og med temperatur
 
-        var weather_found: Boolean = false
+        var weatherfound = false
         if (text == null) { return Weather(".", ".") }
         var direction = "."
         var wind = "."
@@ -47,11 +47,11 @@ class MetarDatasource {
                 val knotNumber = word.take(5)
                 direction = knotNumber.take(3)
                 wind = knotNumber.takeLast(2)
-                weather_found = true
+                weatherfound = true
                 break
             }
         }
-        if (!weather_found) { return return Weather(wind, direction) }
+        if (!weatherfound) { return Weather(wind, direction) }
 
         val floatWind = wind.toFloat() * 0.51
         // 03 --> 3.000 ,  3.000*0.51= 1.53 m/s
@@ -61,7 +61,7 @@ class MetarDatasource {
         return Weather("$printWind m/s", direction)
     }
 
-    public fun Metardecoder(text: String?): Weather {
+    fun metardecoder(text: String?): Weather {
         return metarDecoder(text)
     }
 }
