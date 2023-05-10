@@ -51,6 +51,10 @@ class MetarDatasource {
 
         return Weather("$printWind m/s", direction)
     }
+
+    public fun Metardecoder(text: String?): Weather {
+        return metarDecoder(text)
+    }
 }
 
 data class Weather(val wind: String, val direction: String)
