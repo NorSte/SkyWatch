@@ -32,12 +32,12 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
 
     val timeTables = TimeTables(
         TimeTable(
-            flightUIState.time.scheduled.departure ?: 0,
-            flightUIState.time.estimated.departure ?: 0
+            flightUIState.time?.scheduled?.departure ?: 0,
+            flightUIState.time?.estimated?.departure ?: 0
         ),
         TimeTable(
-            flightUIState.time.scheduled.arrival ?: 0,
-            flightUIState.time.estimated.arrival ?: 0
+            flightUIState.time?.scheduled?.arrival ?: 0,
+            flightUIState.time?.estimated?.arrival ?: 0
         )
     )
 
@@ -46,7 +46,7 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
             .fillMaxWidth()
             .padding(vertical = 12.dp)
     ) {
-        if (flightUIState.identification.id != "N/A") {
+        if (flightUIState.identification?.id != "N/A") {
             Column(Modifier.padding(vertical = 12.dp)) {
                 Row(
                     Modifier.fillMaxWidth(),
@@ -55,18 +55,18 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
                     Column(Modifier.padding(horizontal = 6.dp)) {
                         Row {
                             Text(
-                                flightUIState.identification.callsign,
+                                flightUIState.identification?.callsign ?: "Ingen callsign",
                                 color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight =
                                 FontWeight.Bold
                             )
                             Text(
-                                ", " + flightUIState.airline.short,
+                                ", " + flightUIState.airline?.short,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                         }
                         Text(
-                            "Type: ${flightUIState.aircraft.model.code}",
+                            "Type: ${flightUIState.aircraft?.model?.code}",
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }
@@ -79,13 +79,15 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
                     }
                 }
 
-                if (flightUIState.aircraft.images.medium.isNotEmpty()) {
+                val imageUrl = flightUIState.aircraft?.images?.medium?.get(0)?.src
+                if (imageUrl != null) {
                     AsyncImage(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 5.dp),
-                        model = flightUIState.aircraft.images.medium[0].src,
-                        contentDescription = "Image of plane ${flightUIState.identification.id}"
+                        model = imageUrl,
+                        contentDescription =
+                        "Image of plane ${flightUIState.identification?.id ?: "N/A"}"
                     )
                 }
 
@@ -93,7 +95,7 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
                     AirportInfo(
                         mainScreenViewmodel,
                         false,
-                        flightUIState.airport.origin ?: AirportIdentification(),
+                        flightUIState.airport?.origin ?: AirportIdentification(),
                         timeTables.origin,
                         Modifier
                             .weight(1f)
@@ -102,7 +104,7 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
                     AirportInfo(
                         mainScreenViewmodel,
                         true,
-                        flightUIState.airport.destination ?: AirportIdentification(),
+                        flightUIState.airport?.destination ?: AirportIdentification(),
                         timeTables.destination,
                         Modifier
                             .weight(1f)
@@ -123,7 +125,6 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AirportInfo(
     mainScreenViewmodel: MainScreenViewmodel,
@@ -140,20 +141,24 @@ fun AirportInfo(
         )
 
         Text(
-            text = airport.code.iata,
+            text = airport.code?.iata ?: "N/A",
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.clickable {
-                mainScreenViewmodel.updateDisplayedAirport(airport.code.iata)
-                mainScreenViewmodel.displayAirport()
+                if (airport.code != null) {
+                    mainScreenViewmodel.updateDisplayedAirport(airport.code.iata)
+                    mainScreenViewmodel.displayAirport()
+                }
             }
         )
 
-        val lastIndexOfSpace = airport.name.lastIndexOf(" ")
+        val lastIndexOfSpace = airport.name?.lastIndexOf(" ")
         Text(
-            if (lastIndexOfSpace == -1) {
-                airport.name
-            } else airport.name.substring(0, lastIndexOfSpace),
+            if (airport.name != null) {
+                if (lastIndexOfSpace == -1) {
+                    airport.name
+                } else airport.name.substring(0, lastIndexOfSpace ?: airport.name.length)
+            } else { "N/A" },
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Time(
