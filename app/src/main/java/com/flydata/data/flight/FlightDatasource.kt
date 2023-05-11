@@ -41,6 +41,9 @@ class FlightDatasource(private val mainScreenViewmodel: MainScreenViewmodel) {
     fun fetchNearestFlight(): FlightDetails {
         // gjør uthenting av fly-liste
         val flightList = fetchFlightList().aircraft
+        if (flightList.isEmpty()) {
+            return FlightDetails()
+        }
 
         // går gjennom listen med fly og finner det nærmeste flyet
         var nearestFLightState: List<String> = emptyList()
@@ -91,7 +94,7 @@ class FlightDatasource(private val mainScreenViewmodel: MainScreenViewmodel) {
     fun fetchFlightDetails(icao24: String): FlightDetails {
         // sjekk om flightDetails ligger i cache
         val potentialFlight = flightCache.find { flightDetails ->
-            flightDetails.identification.id == icao24
+            flightDetails.identification?.id == icao24
         }
         if (potentialFlight != null) {
             return potentialFlight
@@ -115,12 +118,12 @@ class FlightDatasource(private val mainScreenViewmodel: MainScreenViewmodel) {
             val flight = adapter.fromJson(responseBody)!!
 
             // legger flyplassinformasjon som bare kan hentes fra dette API-et i flyplass repository
-            val iataOrigin = flight.airport.origin?.code?.iata ?: "OSL"
-            val icaoOrigin = flight.airport.origin?.code?.icao ?: "ENGM"
-            val nameOrigin = flight.airport.origin?.name ?: "Oslo Lufthavn"
-            val iataDestination = flight.airport.destination?.code?.iata ?: "OSL"
-            val icaoDestination = flight.airport.destination?.code?.icao ?: "ENGM"
-            val nameDestination = flight.airport.destination?.name ?: "Oslo Lufthavn"
+            val iataOrigin = flight.airport?.origin?.code?.iata ?: "OSL"
+            val icaoOrigin = flight.airport?.origin?.code?.icao ?: "ENGM"
+            val nameOrigin = flight.airport?.origin?.name ?: "Oslo Lufthavn"
+            val iataDestination = flight.airport?.destination?.code?.iata ?: "OSL"
+            val icaoDestination = flight.airport?.destination?.code?.icao ?: "ENGM"
+            val nameDestination = flight.airport?.destination?.name ?: "Oslo Lufthavn"
 
             val originIdentification = AirportIdentification(iataOrigin, icaoOrigin, nameOrigin)
             val destinationIdentification =
