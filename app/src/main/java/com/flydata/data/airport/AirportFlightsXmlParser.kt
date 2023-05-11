@@ -124,7 +124,7 @@ class AirportFlightsXmlParser {
     }
 
     // fjerner dato og sekunder fra UTC-tid, og legger til 2 timer (tilsvarer sommertid i Norge)
-    private fun convertTime(time: String): String {
+    fun convertTime(time: String): String {
         if (time != "") {
             val localTime = time.substring(11, 16)
             var hrs: Int = localTime.substring(0, 2).toInt()
