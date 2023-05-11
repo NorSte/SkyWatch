@@ -38,10 +38,6 @@ fun FlightMap(mainScreenViewmodel: MainScreenViewmodel) {
             )
         }
     ) {
-        Marker(
-            state = MarkerState(position = LatLng(59.943, 10.717)),
-            title = "Din posisjon"
-        )
         flightMapUIState.aircraft.forEach {
             val icao24 = it[0]
             val lat = it[2]

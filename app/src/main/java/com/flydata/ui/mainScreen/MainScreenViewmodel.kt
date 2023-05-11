@@ -21,7 +21,14 @@ data class AirportIdentification(val iata: String, val icao: String, val name: S
 
 class MainScreenViewmodel : ViewModel() {
 
+    // Initialiserer som IFI
     var deviceLocation = Location("")
+
+    init {
+        deviceLocation.latitude = 59.943
+        deviceLocation.longitude = 10.717
+    }
+
     val flightDatasource = FlightDatasource(this)
     val airportDatasource = AirportDatasource()
     val tafmetardatasource = MetarDatasource()
