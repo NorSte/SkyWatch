@@ -3,6 +3,9 @@ package com.flydata.data.airport
 import android.util.Xml
 import java.io.IOException
 import java.io.InputStream
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.util.*
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 
@@ -123,14 +126,26 @@ class AirportFlightsXmlParser {
         }
     }
 
-    // fjerner dato og sekunder fra UTC-tid, og legger til 2 timer (tilsvarer sommertid i Norge)
+    // konverterer UTC tid i ISO8601-format til norsk tid i "HH:mm" format
+    // krever minimum API-nivå på 26
+    private fun convertTime(time: String): String {
+        if (time != "") {
+            return SimpleDateFormat("HH:mm", Locale("no", "NO"))
+                .format(Date(Instant.parse(time).toEpochMilli()))
+        }
+        return ""
+    }
+
+    // fungerer lavere enn API-nivå 26, men må endres i henhold til sommer-/normaltid
+    /*
     private fun convertTime(time: String): String {
         if (time != "") {
             val localTime = time.substring(11, 16)
             var hrs: Int = localTime.substring(0, 2).toInt()
             hrs = (hrs + 2) % 24
+            // (hrs + 2) er sommertid - (hrs + 1) er normaltid
             return hrs.toString() + ":" + localTime.substring(3, 5)
         }
         return ""
-    }
+    } */
 }
