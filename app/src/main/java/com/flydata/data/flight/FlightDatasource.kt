@@ -1,6 +1,7 @@
 package com.flydata.data.flight
 
 import android.location.Location
+import android.util.Log
 import com.flydata.ui.mainScreen.AirportIdentification
 import com.flydata.ui.mainScreen.MainScreenViewmodel
 import com.squareup.moshi.Moshi
@@ -9,10 +10,16 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 class FlightDatasource(private val mainScreenViewmodel: MainScreenViewmodel) {
-    // posisjonen til IFI
+
     private val location: Location = Location("").apply {
-        this.latitude = 59.943
-        this.longitude = 10.717
+        // Hvis vi ikke har posisjonen til enheten, så bruker vi posisjonen til IFI
+        if (mainScreenViewmodel.deviceLocation == Location("")) {
+            this.latitude = 59.943
+            this.longitude = 10.717
+        } else {
+            this.latitude = mainScreenViewmodel.deviceLocation.latitude
+            this.longitude = mainScreenViewmodel.deviceLocation.longitude
+        }
     }
 
     // koordinatene til et rektangel som innkapsler Norge
@@ -75,6 +82,8 @@ class FlightDatasource(private val mainScreenViewmodel: MainScreenViewmodel) {
             .addHeader("X-RapidAPI-Key", apiKey)
             .build()
 
+        Log.d("FLIGHTLIST", request.toString())
+
         // henter API-svar og konverterer til FLightList-objekt ved hjelp av JSON-deserialisereren
         val response = client.newCall(request).execute()
         val responseBody = response.body?.string()
@@ -104,6 +113,8 @@ class FlightDatasource(private val mainScreenViewmodel: MainScreenViewmodel) {
             .get()
             .addHeader("X-RapidAPI-Key", apiKey)
             .build()
+
+        Log.d("Test", request.toString())
 
         // henter API-svar og konverterer til FlightDetails-objekt ved hjelp av JSON-deserialisereren
         val response = client.newCall(request).execute()
