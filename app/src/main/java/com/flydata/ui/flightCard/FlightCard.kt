@@ -169,29 +169,27 @@ fun AirportInfo(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 13.sp
             )
-        }
-        Time(
-            true,
-            SimpleDateFormat(
-                "HH:mm",
-                Locale("no", "NO")
-            ).format(Date(timeTable.expected * 1000))
-        )
-        Time(
-            false,
-            SimpleDateFormat("HH:mm", Locale("no", "NO")).format(
-                Date(
-                    if (timeTable.actual != 0L) {
-                        timeTable.actual * 1000
-                    } else timeTable.expected * 1000
-                )
+
+            Time(
+                isDestinationAirport, true,
+                SimpleDateFormat(
+                    "HH:mm",
+                    Locale("no", "NO")
+                ).format(Date(timeTable.expected * 1000))
             )
-        )
+            Time(
+                isDestinationAirport, false,
+                SimpleDateFormat(
+                    "HH:mm",
+                    Locale("no", "NO")
+                ).format(Date(timeTable.expected * 1000))
+            )
+        }
     }
 }
 
 @Composable
-fun Time(isPlanned: Boolean, time: String) {
+fun Time(isDestinationAirport: Boolean, isPlanned: Boolean, time: String) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -200,10 +198,10 @@ fun Time(isPlanned: Boolean, time: String) {
             .padding(5.dp),
         Arrangement.SpaceBetween
     ) {
-        Text(
-            if (isPlanned) "Planlagt" else "Forventet",
-            color = MaterialTheme.colorScheme.onPrimary
-        )
+        val timeString: String = if (isPlanned) "Planlagt" else {
+            if (isDestinationAirport) "Forventet" else "Avreist"
+        }
+        Text(timeString, color = MaterialTheme.colorScheme.onPrimary)
         Text(time, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
     }
 }

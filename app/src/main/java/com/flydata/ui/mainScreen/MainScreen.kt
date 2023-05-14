@@ -17,9 +17,7 @@ import com.flydata.R
 import com.flydata.ui.airportCard.AirportCard
 import com.flydata.ui.flightCard.FlightCard
 import com.flydata.ui.flightMap.FlightMap
-import com.flydata.ui.theme.md_theme_light_onPrimary
-import com.flydata.ui.theme.md_theme_light_primary
-import com.flydata.ui.theme.md_theme_light_secondary
+import com.flydata.ui.theme.*
 import kotlinx.coroutines.launch
 
 @Composable
@@ -75,13 +73,13 @@ fun MainScreen() {
                     .weight(1f)
                     .padding(start = 4.dp, end = 4.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = md_theme_light_secondary
+                    containerColor = md_theme_light_primaryContainer
                 )
             ) {
                 Text(
                     "Nærmeste?",
                     fontSize = 12.sp,
-                    color = md_theme_light_onPrimary
+                    color = md_theme_light_onPrimaryContainer
                 )
             }
 
@@ -103,13 +101,13 @@ fun MainScreen() {
                     .weight(1f)
                     .padding(end = 4.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = md_theme_light_secondary
+                    containerColor = md_theme_light_primaryContainer
                 )
             ) {
                 Text(
                     "Naturtrusler",
                     fontSize = 12.sp,
-                    color = md_theme_light_onPrimary
+                    color = md_theme_light_onPrimaryContainer
                 )
             }
         }
