@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.flydata.data.flight.AirportIdentification
 import com.flydata.ui.mainScreen.MainScreenViewmodel
+import com.flydata.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -47,45 +48,51 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
             .padding(vertical = 12.dp)
     ) {
         if (flightUIState.identification.id != "N/A") {
-            Column(Modifier.padding(vertical = 12.dp)) {
+            Column(
+                Modifier.background(color = md_theme_light_primary)
+            ) {
                 Row(
                     Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Column(Modifier.padding(horizontal = 6.dp)) {
+                    Column(Modifier.padding(horizontal = 6.dp, vertical = 6.dp)) {
                         Row {
                             Text(
                                 flightUIState.identification.callsign,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontWeight =
-                                FontWeight.Bold
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontWeight = FontWeight.Bold
                             )
                             Text(
                                 ", " + flightUIState.airline.short,
-                                color = MaterialTheme.colorScheme.onSurface
+                                color = MaterialTheme.colorScheme.onPrimary
                             )
                         }
                         Text(
                             "Type: ${flightUIState.aircraft.model.code}",
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                        Text(
+                            text = "Distanse: ${flightUIState.distance}km",
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                     IconButton(onClick = { mainScreenViewmodel.dismissCard() }) {
                         Icon(
                             Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = Color.Black
+                            tint = Color.White
                         )
                     }
                 }
-
+            }
+            Column {
                 if (flightUIState.aircraft.images.medium.isNotEmpty()) {
                     AsyncImage(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 5.dp),
+                            .fillMaxWidth(),
                         model = flightUIState.aircraft.images.medium[0].src,
-                        contentDescription = "Image of plane ${flightUIState.identification.id}"
+                        contentDescription = "Image of plane " +
+                            "${flightUIState.identification.id.toInt()}"
                     )
                 }
 
@@ -123,7 +130,6 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AirportInfo(
     mainScreenViewmodel: MainScreenViewmodel,
@@ -133,29 +139,37 @@ fun AirportInfo(
     modifier: Modifier
 ) {
     Column(modifier) {
-        Text(
-            if (isDestinationAirport) "TIL" else "FRA",
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontSize = 10.sp,
-        )
+        Column(
+            // Kan klikke hvor som helst fra avg/ank ned til navnet
+            modifier = Modifier.fillMaxWidth()
+                .clickable {
+                    mainScreenViewmodel.updateDisplayedAirport(airport.code.iata)
+                    mainScreenViewmodel.displayAirport()
+                }
+        ) {
+            Text(
+                if (isDestinationAirport) "Ankomst" else "Avgang",
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 10.sp,
+            )
 
-        Text(
-            text = airport.code.iata,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.clickable {
-                mainScreenViewmodel.updateDisplayedAirport(airport.code.iata)
-                mainScreenViewmodel.displayAirport()
-            }
-        )
+            Text(
+                text = airport.code.iata,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
 
-        val lastIndexOfSpace = airport.name.lastIndexOf(" ")
-        Text(
-            if (lastIndexOfSpace == -1) {
-                airport.name
-            } else airport.name.substring(0, lastIndexOfSpace),
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+            val lastIndexOfSpace = airport.name.lastIndexOf(" ")
+            Text(
+                if (lastIndexOfSpace == -1) {
+                    checkMaxAirportLength(airport.name)
+                } else {
+                    checkMaxAirportLength(airport.name.substring(0, lastIndexOfSpace))
+                },
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 14.sp
+            )
+        }
         Time(
             true,
             SimpleDateFormat(
@@ -182,7 +196,7 @@ fun Time(isPlanned: Boolean, time: String) {
         Modifier
             .fillMaxWidth()
             .padding(bottom = 5.dp)
-            .background(MaterialTheme.colorScheme.inversePrimary)
+            .background(md_theme_light_secondary)
             .padding(5.dp),
         Arrangement.SpaceBetween
     ) {
@@ -191,5 +205,16 @@ fun Time(isPlanned: Boolean, time: String) {
             color = MaterialTheme.colorScheme.onPrimary
         )
         Text(time, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
+    }
+}
+
+fun checkMaxAirportLength(string: String): String {
+    val maxLength = 16
+
+    if (string.length < maxLength) {
+        return string
+    } else {
+        // returnerer maks 14 tegn + ...
+        return string.substring(0, maxLength) + "..."
     }
 }
