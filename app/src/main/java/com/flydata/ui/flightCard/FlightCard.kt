@@ -72,7 +72,7 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                         Text(
-                            text = "Distanse: ${flightUIState.distance}km",
+                            text = "Distanse: ${flightUIState.distance.toInt()}km",
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
@@ -92,7 +92,7 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
                             .fillMaxWidth(),
                         model = flightUIState.aircraft.images.medium[0].src,
                         contentDescription = "Image of plane " +
-                            "${flightUIState.identification.id.toInt()}"
+                            flightUIState.identification.id
                     )
                 }
 
@@ -167,7 +167,7 @@ fun AirportInfo(
                     checkMaxAirportLength(airport.name.substring(0, lastIndexOfSpace))
                 },
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 14.sp
+                fontSize = 13.sp
             )
         }
         Time(
@@ -211,10 +211,10 @@ fun Time(isPlanned: Boolean, time: String) {
 fun checkMaxAirportLength(string: String): String {
     val maxLength = 16
 
-    if (string.length < maxLength) {
-        return string
+    return if (string.length < maxLength) {
+        string
     } else {
-        // returnerer maks 14 tegn + ...
-        return string.substring(0, maxLength) + "..."
+        // returnerer maks 16 tegn + ...
+        string.substring(0, maxLength) + "..."
     }
 }
