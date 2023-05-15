@@ -19,16 +19,17 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.flydata.R
 import com.flydata.ui.airportCard.AirportCard
 import com.flydata.ui.flightCard.FlightCard
 import com.flydata.ui.flightMap.FlightMap
+import com.flydata.ui.theme.*
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -55,7 +56,7 @@ fun MainScreen(compActivity: ComponentActivity) {
             modifier = Modifier
                 .height(56.dp)
                 .fillMaxWidth()
-                .background(color = Color.LightGray)
+                .background(color = md_theme_light_primary)
         ) {
             Row(
                 modifier = Modifier
@@ -66,7 +67,8 @@ fun MainScreen(compActivity: ComponentActivity) {
                 Text(
                     text = "Skytracker",
                     modifier = Modifier
-                        .padding(start = 8.dp, end = 4.dp)
+                        .padding(start = 8.dp, end = 4.dp),
+                    color = md_theme_light_onPrimary
                 )
                 Image(
                     painter = painterResource(R.drawable.skytrackerlogo),
@@ -85,10 +87,16 @@ fun MainScreen(compActivity: ComponentActivity) {
                 },
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = 4.dp, end = 4.dp)
-
+                    .padding(start = 4.dp, end = 4.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = md_theme_light_primaryContainer
+                )
             ) {
-                Text("SjekkFly")
+                Text(
+                    "Nærmeste?",
+                    fontSize = 12.sp,
+                    color = md_theme_light_onPrimaryContainer
+                )
             }
 
             // Sigmet meldingsknapp
@@ -107,10 +115,16 @@ fun MainScreen(compActivity: ComponentActivity) {
                 },
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = 4.dp)
-
+                    .padding(end = 4.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = md_theme_light_primaryContainer
+                )
             ) {
-                Text("Værtrusler")
+                Text(
+                    "Naturtrusler",
+                    fontSize = 12.sp,
+                    color = md_theme_light_onPrimaryContainer
+                )
             }
         }
         // Start av flightmap med snackbar i tillegg
