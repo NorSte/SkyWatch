@@ -45,23 +45,21 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
     Card(
         Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp)
     ) {
         if (flightUIState.identification?.id != "N/A") {
             Column(
                 Modifier
-                    .padding(vertical = 12.dp)
                     .background(color = md_theme_light_primary)
             ) {
                 Row(
                     Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Column(Modifier.padding(horizontal = 6.dp, vertical = 6.dp)) {
+                    Column(Modifier.padding(horizontal = 6.dp)) {
                         Row {
                             Text(
                                 flightUIState.identification?.callsign ?: "Ingen callsign",
-                                color = MaterialTheme.colorScheme.onSurface,
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
@@ -93,8 +91,7 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
                 if (imageUrl != null) {
                     AsyncImage(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 5.dp),
+                            .fillMaxWidth(),
                         model = imageUrl,
                         contentDescription =
                         "Image of plane ${flightUIState.identification?.id ?: "N/A"}"
@@ -177,7 +174,8 @@ fun AirportInfo(
                     checkMaxAirportLength(airport.name)
                 } else checkMaxAirportLength(airport.name.substring(0, lastIndexOfSpace))
             } else { "N/A" },
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontSize = 13.sp
         )
         Time(
             isDestinationAirport, true,
