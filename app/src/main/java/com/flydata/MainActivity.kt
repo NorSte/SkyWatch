@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    MainScreen()
+                    MainScreen(this)
                 }
             }
         }

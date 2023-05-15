@@ -33,12 +33,12 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
 
     val timeTables = TimeTables(
         TimeTable(
-            flightUIState.time.scheduled.departure ?: 0,
-            flightUIState.time.estimated.departure ?: 0
+            flightUIState.time?.scheduled?.departure ?: 0,
+            flightUIState.time?.estimated?.departure ?: 0
         ),
         TimeTable(
-            flightUIState.time.scheduled.arrival ?: 0,
-            flightUIState.time.estimated.arrival ?: 0
+            flightUIState.time?.scheduled?.arrival ?: 0,
+            flightUIState.time?.estimated?.arrival ?: 0
         )
     )
 
@@ -47,9 +47,11 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
             .fillMaxWidth()
             .padding(vertical = 12.dp)
     ) {
-        if (flightUIState.identification.id != "N/A") {
+        if (flightUIState.identification?.id != "N/A") {
             Column(
-                Modifier.background(color = md_theme_light_primary)
+                Modifier
+                    .padding(vertical = 12.dp)
+                    .background(color = md_theme_light_primary)
             ) {
                 Row(
                     Modifier.fillMaxWidth(),
@@ -58,21 +60,21 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
                     Column(Modifier.padding(horizontal = 6.dp, vertical = 6.dp)) {
                         Row {
                             Text(
-                                flightUIState.identification.callsign,
-                                color = MaterialTheme.colorScheme.onPrimary,
+                                flightUIState.identification?.callsign ?: "Ingen callsign",
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                ", " + flightUIState.airline.short,
+                                ", " + flightUIState.airline?.short,
                                 color = MaterialTheme.colorScheme.onPrimary
                             )
                         }
                         Text(
-                            "Type: ${flightUIState.aircraft.model.code}",
+                            "Type: ${flightUIState.aircraft?.model?.code}",
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                         Text(
-                            text = "Distanse: ${flightUIState.distance.toInt()}km",
+                            text = "Distanse: ${flightUIState.distance?.toInt()}km",
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
@@ -86,13 +88,16 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
                 }
             }
             Column {
-                if (flightUIState.aircraft.images.medium.isNotEmpty()) {
+
+                val imageUrl = flightUIState.aircraft?.images?.medium?.get(0)?.src
+                if (imageUrl != null) {
                     AsyncImage(
                         modifier = Modifier
-                            .fillMaxWidth(),
-                        model = flightUIState.aircraft.images.medium[0].src,
-                        contentDescription = "Image of plane " +
-                            flightUIState.identification.id
+                            .fillMaxWidth()
+                            .padding(vertical = 5.dp),
+                        model = imageUrl,
+                        contentDescription =
+                        "Image of plane ${flightUIState.identification?.id ?: "N/A"}"
                     )
                 }
 
@@ -100,7 +105,7 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
                     AirportInfo(
                         mainScreenViewmodel,
                         false,
-                        flightUIState.airport.origin ?: AirportIdentification(),
+                        flightUIState.airport?.origin ?: AirportIdentification(),
                         timeTables.origin,
                         Modifier
                             .weight(1f)
@@ -109,7 +114,7 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
                     AirportInfo(
                         mainScreenViewmodel,
                         true,
-                        flightUIState.airport.destination ?: AirportIdentification(),
+                        flightUIState.airport?.destination ?: AirportIdentification(),
                         timeTables.destination,
                         Modifier
                             .weight(1f)
@@ -143,7 +148,7 @@ fun AirportInfo(
             // Kan klikke hvor som helst fra avg/ank ned til navnet
             modifier = Modifier.fillMaxWidth()
                 .clickable {
-                    mainScreenViewmodel.updateDisplayedAirport(airport.code.iata)
+                    mainScreenViewmodel.updateDisplayedAirport(airport.code?.iata ?: "OSL")
                     mainScreenViewmodel.displayAirport()
                 }
         ) {
@@ -154,37 +159,44 @@ fun AirportInfo(
             )
 
             Text(
-                text = airport.code.iata,
+                text = airport.code?.iata ?: "N/A",
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-
-            val lastIndexOfSpace = airport.name.lastIndexOf(" ")
-            Text(
-                if (lastIndexOfSpace == -1) {
-                    checkMaxAirportLength(airport.name)
-                } else {
-                    checkMaxAirportLength(airport.name.substring(0, lastIndexOfSpace))
-                },
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 13.sp
-            )
-
-            Time(
-                isDestinationAirport, true,
-                SimpleDateFormat(
-                    "HH:mm",
-                    Locale("no", "NO")
-                ).format(Date(timeTable.expected * 1000))
-            )
-            Time(
-                isDestinationAirport, false,
-                SimpleDateFormat(
-                    "HH:mm",
-                    Locale("no", "NO")
-                ).format(Date(timeTable.expected * 1000))
+                modifier = Modifier.clickable {
+                    if (airport.code != null) {
+                        mainScreenViewmodel.updateDisplayedAirport(airport.code.iata)
+                        mainScreenViewmodel.displayAirport()
+                    }
+                }
             )
         }
+        val lastIndexOfSpace = airport.name?.lastIndexOf(" ") ?: 0
+        Text(
+            text = if (airport.name != null) {
+                if (lastIndexOfSpace == -1) {
+                    checkMaxAirportLength(airport.name)
+                } else checkMaxAirportLength(airport.name.substring(0, lastIndexOfSpace))
+            } else { "N/A" },
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Time(
+            isDestinationAirport, true,
+            SimpleDateFormat(
+                "HH:mm",
+                Locale("no", "NO")
+            ).format(Date(timeTable.expected * 1000))
+        )
+        Time(
+            isDestinationAirport,
+            false,
+            SimpleDateFormat("HH:mm", Locale("no", "NO")).format(
+                Date(
+                    if (timeTable.actual != 0L) {
+                        timeTable.actual * 1000
+                    } else timeTable.expected * 1000
+                )
+            )
+        )
     }
 }
 
