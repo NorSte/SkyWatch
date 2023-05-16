@@ -8,7 +8,6 @@ import android.location.Location
 import android.location.LocationManager
 import android.os.Looper
 import android.provider.Settings
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -65,7 +64,7 @@ fun MainScreen(compActivity: ComponentActivity) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Skytracker",
+                    text = "SkyWatch",
                     modifier = Modifier
                         .padding(start = 8.dp, end = 4.dp),
                     color = md_theme_light_onPrimary
@@ -175,8 +174,6 @@ fun getLocation(componentActivity: ComponentActivity): Location {
         override fun onLocationResult(locationResult: LocationResult) {
             for (location in locationResult.locations) {
                 // Sende lokasjon til uiState,
-                Log.i("LOCATION", location.latitude.toString())
-                Log.i("LOCATION", location.longitude.toString())
                 deviceLocation.latitude = location.latitude
                 deviceLocation.longitude = location.longitude
             }

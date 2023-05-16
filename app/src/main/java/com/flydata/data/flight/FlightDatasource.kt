@@ -33,7 +33,7 @@ class FlightDatasource(private val mainScreenViewmodel: MainScreenViewmodel) {
 
     // API-parametere
     private val client = OkHttpClient()
-    private val apiKey = "286c602e02msh3ea39c716cff805p1a9d62jsnb61871a74e95"
+    private val apiKey = "35c9ce2480msh8632d62a7062939p1724b3jsnfe01a274ee5f"
     private val baseUrl = "https://flight-radar1.p.rapidapi.com"
 
     // cache
