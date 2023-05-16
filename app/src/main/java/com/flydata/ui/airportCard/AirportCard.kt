@@ -1,10 +1,12 @@
 package com.flydata.ui.airportCard
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -37,66 +39,80 @@ fun AirportCard(
         )
     }
     val airportUIState by airportViewmodel.airportCardUIState.collectAsState()
+    // For Scrollable
+    val scrollState = rememberScrollState()
 
     Card(
         Modifier
             .fillMaxWidth()
             .padding(6.dp)
-    ) {
-        if (airportUIState.airportCode != "") {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                IconButton(onClick = { mainScreenViewmodel.displayFlight() }) {
-                    Icon(
-                        Icons.Default.ArrowBack,
-                        contentDescription = "Close",
-                        tint = Color.Black
-                    )
-                }
-                IconButton(onClick = { mainScreenViewmodel.dismissCard() }) {
-                    Icon(
-                        Icons.Default.Close,
-                        contentDescription = "Close",
-                        tint = Color.Black
-                    )
-                }
-            }
-            Row {
-                Text(airportUIState.airportCode, fontSize = 32.sp, fontWeight = FontWeight.Bold)
-                Text(
-                    ", " + airportNamesMap[airportUIState.airportCode],
-                    fontSize = 32.sp,
-                    color = Color.Gray
-                )
-            }
-            Row {
-                Text(
-                    "Vind: ${airportUIState.airportWeather.wind}, " +
-                        "Retning: "
-                )
-                val windDirection = airportUIState.airportWeather.direction.toFloatOrNull()
-                if (windDirection != null) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.north_arrow),
-                        contentDescription = "arrow",
-                        modifier = Modifier.rotate(windDirection)
-                    )
-                } else {
-                    Text("Variabel vindretning")
-                }
-            }
-
-            FlightTable(
-                tablelist = airportUIState.airportFlights,
-                airportCardViewmodel = airportViewmodel
+            .scrollable(
+                orientation = Orientation.Vertical,
+                state = scrollState
             )
-        } else {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp),
-                Arrangement.Center
-            ) {
-                Text("Laster inn flyplass-data ...")
+    ) {
+        Column(
+            modifier = Modifier
+                .verticalScroll(scrollState)
+        ) {
+            if (airportUIState.airportCode != "") {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    IconButton(onClick = { mainScreenViewmodel.displayFlight() }) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Close",
+                            tint = Color.Black
+                        )
+                    }
+                    IconButton(onClick = { mainScreenViewmodel.dismissCard() }) {
+                        Icon(
+                            Icons.Default.Close,
+                            contentDescription = "Close",
+                            tint = Color.Black
+                        )
+                    }
+                }
+                Row(modifier = Modifier.padding(horizontal = 6.dp)) {
+                    Text(
+                        airportUIState.airportCode,
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        ", " + airportNamesMap[airportUIState.airportCode],
+                        fontSize = 32.sp,
+                        color = Color.Gray
+                    )
+                }
+                Row(modifier = Modifier.padding(horizontal = 6.dp)) {
+                    Text(
+                        "Vind: ${airportUIState.airportWeather.wind}, " +
+                            "Retning: "
+                    )
+                    val windDirection = airportUIState.airportWeather.direction.toFloatOrNull()
+                    if (windDirection != null) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.north_arrow),
+                            contentDescription = "arrow",
+                            modifier = Modifier.rotate(windDirection)
+                        )
+                    } else {
+                        Text("Variabel vindretning")
+                    }
+                }
+                FlightTable(
+                    tablelist = airportUIState.airportFlights,
+                    airportCardViewmodel = airportViewmodel
+                )
+            } else {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    Arrangement.Center
+                ) {
+                    Text("Laster inn flyplass-data ...")
+                }
             }
         }
     }
@@ -164,8 +180,8 @@ fun FlightTable(tablelist: List<AirportFlight>, airportCardViewmodel: AirportCar
                 Text("Status", Modifier.weight(mediumColumnWeight), fontWeight = FontWeight.Bold)
             }
 
-            LazyColumn(Modifier.padding(6.dp)) {
-                items(tablelist) { flight ->
+            Column(Modifier.padding(6.dp)) {
+                tablelist.forEach { flight ->
                     Row(Modifier.fillMaxWidth()) {
                         Text(
                             airportNamesMap[flight.airport] ?: flight.airport,
@@ -183,6 +199,7 @@ fun FlightTable(tablelist: List<AirportFlight>, airportCardViewmodel: AirportCar
                         Text(
                             statusMessages[flight.statusText] ?: "",
                             Modifier.weight(mediumColumnWeight)
+                                .padding(bottom = 6.dp)
                         )
                     }
                     Box(

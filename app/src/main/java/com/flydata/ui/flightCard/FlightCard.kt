@@ -2,14 +2,20 @@ package com.flydata.ui.flightCard
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -31,6 +37,9 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
     }
     val flightUIState by flightViewmodel.flightCardUIState.collectAsState()
 
+    // For Scrollable
+    val scrollState = rememberScrollState()
+
     val timeTables = TimeTables(
         TimeTable(
             flightUIState.time?.scheduled?.departure ?: 0,
@@ -45,88 +54,99 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
     Card(
         Modifier
             .fillMaxWidth()
+            .scrollable(
+                orientation = Orientation.Vertical,
+                state = scrollState
+            )
     ) {
-        if (flightUIState.identification?.id != "N/A") {
-            Column(
-                Modifier
-                    .background(color = md_theme_light_primary)
-            ) {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+        // Øverste column er all content som skal bli gjort scrollable
+        Column(
+            modifier = Modifier
+                .verticalScroll(scrollState)
+        ) {
+            if (flightUIState.identification?.id != "N/A") {
+                Column(
+                    Modifier
+                        .background(color = md_theme_light_primary)
                 ) {
-                    Column(Modifier.padding(horizontal = 6.dp)) {
-                        Row {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(Modifier.padding(horizontal = 6.dp)) {
+                            Row {
+                                Text(
+                                    flightUIState.identification?.callsign ?: "Ingen callsign",
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    ", " + flightUIState.airline?.short,
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                )
+                            }
                             Text(
-                                flightUIState.identification?.callsign ?: "Ingen callsign",
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                fontWeight = FontWeight.Bold
+                                "Type: ${flightUIState.aircraft?.model?.code}",
+                                color = MaterialTheme.colorScheme.onPrimary
                             )
                             Text(
-                                ", " + flightUIState.airline?.short,
+                                text = "Distanse: ${flightUIState.distance?.toInt()}km",
                                 color = MaterialTheme.colorScheme.onPrimary
                             )
                         }
-                        Text(
-                            "Type: ${flightUIState.aircraft?.model?.code}",
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
-                        Text(
-                            text = "Distanse: ${flightUIState.distance?.toInt()}km",
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
-                    IconButton(onClick = { mainScreenViewmodel.dismissCard() }) {
-                        Icon(
-                            Icons.Default.Close,
-                            contentDescription = "Close",
-                            tint = Color.White
-                        )
+                        IconButton(onClick = { mainScreenViewmodel.dismissCard() }) {
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = "Close",
+                                tint = Color.White
+                            )
+                        }
                     }
                 }
-            }
-            Column {
+                Column {
 
-                val imageUrl = flightUIState.aircraft?.images?.medium?.get(0)?.src
-                if (imageUrl != null) {
-                    AsyncImage(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        model = imageUrl,
-                        contentDescription =
-                        "Image of plane ${flightUIState.identification?.id ?: "N/A"}"
-                    )
-                }
+                    val imageUrl = flightUIState.aircraft?.images?.medium?.get(0)?.src
+                    if (imageUrl != null) {
+                        AsyncImage(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            model = imageUrl,
+                            contentDescription =
+                            "Image of plane ${flightUIState.identification?.id ?: "N/A"}",
+                            contentScale = ContentScale.FillWidth
+                        )
+                    }
 
-                Row(Modifier.fillMaxWidth()) {
-                    AirportInfo(
-                        mainScreenViewmodel,
-                        false,
-                        flightUIState.airport?.origin ?: AirportIdentification(),
-                        timeTables.origin,
-                        Modifier
-                            .weight(1f)
-                            .padding(5.dp)
-                    )
-                    AirportInfo(
-                        mainScreenViewmodel,
-                        true,
-                        flightUIState.airport?.destination ?: AirportIdentification(),
-                        timeTables.destination,
-                        Modifier
-                            .weight(1f)
-                            .padding(5.dp)
-                    )
+                    Row(Modifier.fillMaxWidth()) {
+                        AirportInfo(
+                            mainScreenViewmodel,
+                            false,
+                            flightUIState.airport?.origin ?: AirportIdentification(),
+                            timeTables.origin,
+                            Modifier
+                                .weight(1f)
+                                .padding(5.dp)
+                        )
+                        AirportInfo(
+                            mainScreenViewmodel,
+                            true,
+                            flightUIState.airport?.destination ?: AirportIdentification(),
+                            timeTables.destination,
+                            Modifier
+                                .weight(1f)
+                                .padding(5.dp)
+                        )
+                    }
                 }
-            }
-        } else {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp),
-                Arrangement.Center
-            ) {
-                Text("Laster inn flydata ...")
+            } else {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    Arrangement.Center
+                ) {
+                    Text("Laster inn flydata ...")
+                }
             }
         }
     }
@@ -158,6 +178,7 @@ fun AirportInfo(
             Text(
                 text = airport.code?.iata ?: "N/A",
                 fontWeight = FontWeight.Bold,
+                textDecoration = TextDecoration.Underline,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.clickable {
                     if (airport.code != null) {
@@ -175,6 +196,7 @@ fun AirportInfo(
                 } else checkMaxAirportLength(airport.name.substring(0, lastIndexOfSpace))
             } else { "N/A" },
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textDecoration = TextDecoration.Underline,
             fontSize = 13.sp
         )
         Time(
