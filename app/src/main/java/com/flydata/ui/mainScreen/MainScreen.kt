@@ -8,6 +8,7 @@ import android.location.Location
 import android.location.LocationManager
 import android.os.Looper
 import android.provider.Settings
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,11 +20,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import com.flydata.R
 import com.flydata.ui.airportCard.AirportCard
 import com.flydata.ui.flightCard.FlightCard
@@ -37,6 +42,19 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun MainScreen(compActivity: ComponentActivity) {
+    ComposableLifecycle { _, event ->
+        val tag = "MAINSCREEN"
+        when (event) {
+            Lifecycle.Event.ON_CREATE -> { Log.d(tag, "MainScreen.ON_CREATE") }
+            Lifecycle.Event.ON_START -> { Log.d(tag, "MainScreen.ON_START") }
+            Lifecycle.Event.ON_RESUME -> { Log.d(tag, "MainScreen.ON_RESUME") }
+            Lifecycle.Event.ON_PAUSE -> { Log.d(tag, "MainScreen.ON_PAUSE") }
+            Lifecycle.Event.ON_STOP -> { Log.d(tag, "MainScreen.ON_STOP") }
+            Lifecycle.Event.ON_DESTROY -> { Log.d(tag, "MainScreen.ON_DESTROY") }
+            else -> {}
+        }
+    }
+
     val mainScreenViewmodel by remember { mutableStateOf(MainScreenViewmodel()) }
     val mainScreenUIState by mainScreenViewmodel.mainScreenUIState.collectAsState()
 
@@ -44,7 +62,6 @@ fun MainScreen(compActivity: ComponentActivity) {
     val scope = rememberCoroutineScope()
 
     mainScreenViewmodel.updateLocation(getLocation(compActivity))
-    mainScreenViewmodel.displayFlight()
 
     Column(
         modifier = Modifier
@@ -166,7 +183,7 @@ fun getLocation(componentActivity: ComponentActivity): Location {
     // forespørsel på lokasjonen går hvert intervall
     val locationRequest = LocationRequest.create()
         .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-        .setInterval(5000)
+        .setInterval(20000)
         .setFastestInterval(2000)
 
     // Lager et objekt som kaller på lokasjonen
@@ -219,5 +236,22 @@ fun locationServicePrompt(componentActivity: ComponentActivity) {
                 dialog.cancel()
             }
             .show()
+    }
+}
+
+@Composable
+fun ComposableLifecycle(
+    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
+    onEvent: (LifecycleOwner, Lifecycle.Event) -> Unit
+) {
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { source, event ->
+            onEvent(source, event)
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
     }
 }
