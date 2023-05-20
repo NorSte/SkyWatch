@@ -9,23 +9,19 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-
 @RunWith(AndroidJUnit4::class)
-class NosigmetTest {
+class NoSigmetTest {
 
     @get:Rule
     val rule = createComposeRule()
 
-
     @Test
-    fun click_sigmet()
-    {
-        rule.setContent{ MainScreen() }
+    fun click_sigmet() {
+        rule.setContent { MainScreen() }
 
-        //trykker på værmeldingen
+        // trykker på værmeldingen
         rule.onNodeWithText("Værtrusler").performClick()
 
         rule.onNodeWithText("Ingen trusler nå").assertExists()
-
     }
 }

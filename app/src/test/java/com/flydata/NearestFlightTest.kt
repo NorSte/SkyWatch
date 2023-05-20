@@ -13,7 +13,7 @@ import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
-class nearestFlightTest {
+class NearestFlightTest {
 
     @Mock
     lateinit var screenviewmodel: MainScreenViewmodel

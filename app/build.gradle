@@ -109,7 +109,7 @@ dependencies {
 
     // Test rules and transitive dependencies:
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:$compose_version")
-// Needed for createAndroidComposeRule, but not createComposeRule:
+    // Needed for createAndroidComposeRule, but not createComposeRule:
     debugImplementation("androidx.compose.ui:ui-test-manifest:$compose_version")
 
     implementation "androidx.ui:ui-framework:0.1.0-dev03"
