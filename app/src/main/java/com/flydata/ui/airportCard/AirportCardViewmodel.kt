@@ -50,7 +50,8 @@ class AirportCardViewmodel(
                     typeOfListing
                 ),
                 airportCardUIState.value.airportName,
-                airportCardUIState.value.airportCode
+                airportCardUIState.value.airportCode,
+                airportWeather = tafmetardatasource.getTafmetar(icao)
             )
         }
     }

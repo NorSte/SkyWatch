@@ -1,5 +1,14 @@
 package com.flydata.ui.mainScreen
 
+import android.Manifest
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
+import android.os.Looper
+import android.provider.Settings
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -9,23 +18,33 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.flydata.R
 import com.flydata.ui.airportCard.AirportCard
 import com.flydata.ui.flightCard.FlightCard
 import com.flydata.ui.flightMap.FlightMap
+import com.flydata.ui.theme.*
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.launch
 
 @Composable
-fun MainScreen() {
+fun MainScreen(compActivity: ComponentActivity) {
     val mainScreenViewmodel by remember { mutableStateOf(MainScreenViewmodel()) }
     val mainScreenUIState by mainScreenViewmodel.mainScreenUIState.collectAsState()
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+
+    mainScreenViewmodel.updateLocation(getLocation(compActivity))
+    mainScreenViewmodel.displayFlight()
 
     Column(
         modifier = Modifier
@@ -36,7 +55,7 @@ fun MainScreen() {
             modifier = Modifier
                 .height(56.dp)
                 .fillMaxWidth()
-                .background(color = Color.LightGray)
+                .background(color = md_theme_light_primary)
         ) {
             Row(
                 modifier = Modifier
@@ -45,9 +64,10 @@ fun MainScreen() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Skytracker",
+                    text = "SkyWatch",
                     modifier = Modifier
-                        .padding(start = 8.dp, end = 4.dp)
+                        .padding(start = 8.dp, end = 4.dp),
+                    color = md_theme_light_onPrimary
                 )
                 Image(
                     painter = painterResource(R.drawable.skytrackerlogo),
@@ -66,10 +86,16 @@ fun MainScreen() {
                 },
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = 4.dp, end = 4.dp)
-
+                    .padding(start = 4.dp, end = 4.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = md_theme_light_primaryContainer
+                )
             ) {
-                Text("SjekkFly",)
+                Text(
+                    "Nærmeste?",
+                    fontSize = 12.sp,
+                    color = md_theme_light_onPrimaryContainer
+                )
             }
 
             // Sigmet meldingsknapp
@@ -88,10 +114,16 @@ fun MainScreen() {
                 },
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = 4.dp)
-
+                    .padding(end = 4.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = md_theme_light_primaryContainer
+                )
             ) {
-                Text("Værtrusler",)
+                Text(
+                    "Naturtrusler",
+                    fontSize = 12.sp,
+                    color = md_theme_light_onPrimaryContainer
+                )
             }
         }
         // Start av flightmap med snackbar i tillegg
@@ -121,5 +153,71 @@ fun MainScreen() {
                 }
             }
         )
+    }
+}
+fun getLocation(componentActivity: ComponentActivity): Location {
+    locationServicePrompt(componentActivity)
+
+    // Lager en lokasjonsklient
+    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(componentActivity)
+
+    val deviceLocation = Location("")
+
+    // forespørsel på lokasjonen går hvert intervall
+    val locationRequest = LocationRequest.create()
+        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+        .setInterval(5000)
+        .setFastestInterval(2000)
+
+    // Lager et objekt som kaller på lokasjonen
+    val locationCallback: LocationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            for (location in locationResult.locations) {
+                // Sende lokasjon til uiState,
+                deviceLocation.latitude = location.latitude
+                deviceLocation.longitude = location.longitude
+            }
+        }
+    }
+
+    val locationNumber = 100
+    // sjekker om det er tilgang til lokasjonen, hvis ikke spør den om tilgang
+    if (ContextCompat.checkSelfPermission(
+            componentActivity,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED
+    ) {
+        // Spør om tilgang
+        ActivityCompat.requestPermissions(
+            componentActivity,
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), locationNumber
+        )
+    }
+
+    // klienten som kobler alt sammen og kaller på posisjon
+    fusedLocationClient.requestLocationUpdates(
+        locationRequest, locationCallback, Looper.getMainLooper()
+    )
+
+    return deviceLocation
+}
+
+fun locationServicePrompt(componentActivity: ComponentActivity) {
+    // Hvis bruker har skrudd av lokasjonstjenester så ber den bruker å skru det på igjen
+    val locationManager = componentActivity
+        .getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+        // Ikke tilgang på lokasjon, lager en melding
+        android.app.AlertDialog.Builder(componentActivity)
+            .setTitle("Lokasjonstjenester er ikke aktive")
+            .setMessage("Vennligst skru på lokasjonstjenester og GPS")
+            .setPositiveButton("OK") { _, _ ->
+                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                componentActivity.startActivity(intent)
+            }
+            .setNegativeButton("Avbryt") { dialog, _ ->
+                dialog.cancel()
+            }
+            .show()
     }
 }
