@@ -55,15 +55,13 @@ class nearestFlightTest {
             "1683985966", "TMP", "CPH", "", "0", "0", "NJE755L", "0"
         )
 
-
-
         val list4 = listOf(
             "3044fa25", "47A7A8", "57.20", "16.18", "338",
             "40000", "459", "", "F-ESGP4", "B738", "LN-NGK",
             "1683985964", "LCA", "TRD", "DY8841", "0", "0", "NOZ8841", "0"
         )
 
-        //dette er den nærmeste
+        // dette er den nærmeste
         val list5 = listOf(
             "30451986", "4A91F8", "59.72", "10.86", "1",
             "39000", "432", "", "F-EKRD1", "A20N", "SE-DOX",
