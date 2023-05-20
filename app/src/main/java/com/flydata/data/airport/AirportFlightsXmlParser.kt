@@ -135,17 +135,4 @@ class AirportFlightsXmlParser {
         }
         return ""
     }
-
-    // fungerer lavere enn API-nivå 26, men må endres i henhold til sommer-/normaltid
-    /*
-    private fun convertTime(time: String): String {
-        if (time != "") {
-            val localTime = time.substring(11, 16)
-            var hrs: Int = localTime.substring(0, 2).toInt()
-            hrs = (hrs + 2) % 24
-            // (hrs + 2) er sommertid - (hrs + 1) er normaltid
-            return hrs.toString() + ":" + localTime.substring(3, 5)
-        }
-        return ""
-    } */
 }

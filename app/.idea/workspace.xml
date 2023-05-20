@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="e821b032-6ace-4725-b251-f2c36219bd04" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/res/drawable/north_arrow.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/deploymentTargetDropDown.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/deploymentTargetDropDown.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/flydata/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/flydata/MainActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/flydata/data/airport/AirportFlightsXmlParser.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/flydata/data/airport/AirportFlightsXmlParser.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/flydata/data/flight/FlightDatasource.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/flydata/data/flight/FlightDatasource.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/flydata/data/flight/FlightDetails.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/flydata/data/flight/FlightDetails.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/flydata/ui/airportCard/AirportCard.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/flydata/ui/airportCard/AirportCard.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/flydata/ui/airportCard/AirportCardViewmodel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/flydata/ui/airportCard/AirportCardViewmodel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/flydata/ui/flightCard/FlightCard.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/flydata/ui/flightCard/FlightCard.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/flydata/ui/flightMap/FlightMap.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/flydata/ui/flightMap/FlightMap.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/flydata/ui/mainScreen/MainScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/flydata/ui/mainScreen/MainScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/flydata/ui/mainScreen/MainScreenViewmodel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/flydata/ui/mainScreen/MainScreenViewmodel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/res/values/colors.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/res/values/colors.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/res/values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/res/values/themes.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/res/values/themes.xml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectId" id="2Q3qgITOGB2bUBcURJNcJlWOVGK" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "cidr.known.project.marker": "true"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e821b032-6ace-4725-b251-f2c36219bd04" name="Changes" comment="" />
+      <created>1684592731644</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1684592731644</updated>
+    </task>
+    <servers />
+  </component>
+</project>
