@@ -11,7 +11,7 @@ import org.junit.runner.RunWith
 
 
 @RunWith(AndroidJUnit4::class)
-class NosigmetTest {
+class NoSigmetTest {
 
     @get:Rule
     val rule = createComposeRule()
