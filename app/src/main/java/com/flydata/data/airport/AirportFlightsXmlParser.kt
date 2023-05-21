@@ -128,7 +128,7 @@ class AirportFlightsXmlParser {
 
     // konverterer UTC tid i ISO8601-format til norsk tid i "HH:mm" format
     // krever minimum API-nivå på 26
-    private fun convertTime(time: String): String {
+    fun convertTime(time: String): String {
         if (time != "") {
             return SimpleDateFormat("HH:mm", Locale("no", "NO"))
                 .format(Date(Instant.parse(time).toEpochMilli()))
