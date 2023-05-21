@@ -1,11 +1,11 @@
 package com.flydata
 
-import androidx.compose.runtime.getValue
 import com.flydata.data.airport.AirportDatasource
 import com.flydata.data.airport.MetarDatasource
 import com.flydata.data.airport.Weather
 import com.flydata.ui.airportCard.AirportCardViewmodel
 import com.flydata.ui.airportCard.TypeOfListing
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
@@ -24,19 +24,11 @@ class ChangeTypeListingTest {
     @Mock
     private lateinit var tafmetardatasource: MetarDatasource
 
-    @Mock
-    lateinit var airportviewmodel: AirportCardViewmodel
-
-    // må omskrive disse metodene, de ligger i init metoden til viewmodel
-    /*
-    airportDatasource.fetchAirportFlights(iata,airportCardUIState.value.typeOfListing),
-    airportWeather = tafmetardatasource.getTafmetar(icao)
-     */
-
     @Before
     fun setUp() {
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun typelisting_test() = runTest {
         given(airportdatasource.fetchAirportFlights("", TypeOfListing.DEPARTURE))
@@ -46,7 +38,7 @@ class ChangeTypeListingTest {
 
         advanceUntilIdle()
 
-        var airportviewmodel = AirportCardViewmodel(
+        val airportviewmodel = AirportCardViewmodel(
             airportdatasource,
             tafmetardatasource = tafmetardatasource,
             icao = ""
