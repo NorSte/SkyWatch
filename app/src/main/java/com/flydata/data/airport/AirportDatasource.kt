@@ -57,6 +57,15 @@ class AirportDatasource {
         airportCache.add(Airport(iata, airportFlights))
         return filteredAirportFlights
     }
+
+    fun airportNameShortner(text: String): String {
+        val maxlenght = 14
+
+        if (text.length < maxlenght)
+            return text
+
+        return text.substring(0, maxlenght) + ".."
+    }
 }
 
 data class Airport(

@@ -144,4 +144,28 @@ class FlightDatasource(private val mainScreenViewmodel: MainScreenViewmodel) {
             throw Exception("Response body is null")
         }
     }
+
+    // funksjonen tar en lokasjon, og en flightlist, og returnerer fly ID-en av nærmeste fly
+    fun fetchNearestFlight(location: Location, flightlist: FlightList): String {
+        // gjør uthenting av fly-liste
+        val flightList = flightlist.aircraft
+
+        // går gjennom listen med fly og finner det nærmeste flyet
+        var nearestFLightState: List<String> = emptyList()
+        var nearestDistance: Float = Float.MAX_VALUE
+        for (state: List<String> in flightList) {
+            val flightLocation = Location("").apply {
+                latitude = state[2].toDouble()
+                longitude = state[3].toDouble()
+            }
+            val distance = location.distanceTo(flightLocation)
+            if (distance < nearestDistance) {
+                nearestFLightState = state
+                nearestDistance = distance
+            }
+        }
+
+        val flightDetails = nearestFLightState[0]
+        return flightDetails
+    }
 }
