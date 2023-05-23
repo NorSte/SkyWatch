@@ -12,7 +12,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class NoSigmetTest {
-    //Lager testActivity for å kjøre click_sigmet
+    // Lager testActivity for å kjøre click_sigmet
     private val testActivity: TestActivity = ComponentActivity() as TestActivity
 
     @get:Rule

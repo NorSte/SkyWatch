@@ -1,4 +1,4 @@
-package com.flydata.data.airport
+package com.flydata.data.weather
 
 import android.util.Xml
 import java.io.IOException

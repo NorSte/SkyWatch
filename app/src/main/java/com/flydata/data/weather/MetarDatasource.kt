@@ -1,4 +1,4 @@
-package com.flydata.data.airport
+package com.flydata.data.weather
 
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -29,7 +29,9 @@ class MetarDatasource {
         // det er mulighet for videre dekoding, til og med temperatur
 
         var weatherfound = false
-        if (text == null) { return Weather(".", ".") }
+        if (text == null) {
+            return Weather(".", ".")
+        }
         var direction = "."
         var wind = "."
 
@@ -54,7 +56,9 @@ class MetarDatasource {
                 }
             }
         }
-        if (!weatherfound) { return Weather(wind, direction) }
+        if (!weatherfound) {
+            return Weather(wind, direction)
+        }
         val floatWind = wind.toFloat() * 0.51
         // 03 --> 3.000 ,  3.000*0.51= 1.53 m/s
 

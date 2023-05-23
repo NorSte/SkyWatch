@@ -1,4 +1,4 @@
-package com.flydata.data.airport
+package com.flydata.data.weather
 
 import io.ktor.client.*
 import io.ktor.client.call.*

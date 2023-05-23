@@ -1,7 +1,7 @@
 package com.flydata.ui.airportCard
 
 import com.flydata.data.airport.AirportFlight
-import com.flydata.data.airport.Weather
+import com.flydata.data.weather.Weather
 
 enum class TypeOfListing {
     ARRIVAL, DEPARTURE

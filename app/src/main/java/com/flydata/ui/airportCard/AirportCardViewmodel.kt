@@ -2,7 +2,7 @@ package com.flydata.ui.airportCard
 
 import androidx.lifecycle.ViewModel
 import com.flydata.data.airport.AirportDatasource
-import com.flydata.data.airport.MetarDatasource
+import com.flydata.data.weather.MetarDatasource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace "om.flydata"
+    namespace "com.flydata"
     compileSdk 33
 
     testOptions {

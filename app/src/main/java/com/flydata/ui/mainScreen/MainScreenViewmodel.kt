@@ -7,9 +7,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flydata.data.airport.AirportDatasource
-import com.flydata.data.airport.MetarDatasource
-import com.flydata.data.airport.SigmetDatasource
 import com.flydata.data.flight.FlightDatasource
+import com.flydata.data.weather.MetarDatasource
+import com.flydata.data.weather.SigmetDatasource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
