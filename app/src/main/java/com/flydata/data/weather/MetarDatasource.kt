@@ -24,7 +24,7 @@ class MetarDatasource {
         return metarDecoder(listOfMetar.last().metarText)
     }
 
-    private fun metarDecoder(text: String?): Weather {
+    fun metarDecoder(text: String?): Weather {
         // i form ENGM 310350Z 03006KT CAVOK M02/M07 Q1004 NOSIG=
         // det er mulighet for videre dekoding, til og med temperatur
 
@@ -65,10 +65,6 @@ class MetarDatasource {
         val printWind: String = String.format("%.1f", floatWind)
 
         return Weather("$printWind m/s", direction)
-    }
-
-    fun metardecoder(text: String?): Weather {
-        return metarDecoder(text)
     }
 }
 

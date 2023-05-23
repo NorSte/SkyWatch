@@ -1,8 +1,8 @@
 package com.flydata
 
 import com.flydata.data.airport.AirportDatasource
-import com.flydata.data.airport.MetarDatasource
-import com.flydata.data.airport.Weather
+import com.flydata.data.weather.MetarDatasource
+import com.flydata.data.weather.Weather
 import com.flydata.ui.airportCard.AirportCardViewmodel
 import com.flydata.ui.airportCard.TypeOfListing
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,6 +21,7 @@ class ChangeTypeListingTest {
 
     @Mock
     private lateinit var airportdatasource: AirportDatasource
+
     @Mock
     private lateinit var tafmetardatasource: MetarDatasource
 

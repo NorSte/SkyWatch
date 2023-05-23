@@ -17,20 +17,20 @@ class NearestFlightTest {
 
     @Mock
     lateinit var screenviewmodel: MainScreenViewmodel
-    lateinit var flightdatasource: FlightDatasource
+    private lateinit var flightdatasource: FlightDatasource
 
     @Mock
-    lateinit var IFIlokasjon: Location
+    lateinit var ifiLokasjon: Location
 
     @Before
     fun setUp() {
         // IFIlokasjon.set(flightLocation)
-        IFIlokasjon.setMock(true)
+        ifiLokasjon.isMock = true
         // IFIlokasjon.setLatitude(59.943)
         // IFIlokasjon.setLongitude(10.717)
 
-        given(IFIlokasjon.getLatitude()).willReturn(59.943)
-        given(IFIlokasjon.getLongitude()).willReturn(10.717)
+        given(ifiLokasjon.latitude).willReturn(59.943)
+        given(ifiLokasjon.longitude).willReturn(10.717)
         flightdatasource = FlightDatasource(screenviewmodel)
     }
 
@@ -91,7 +91,7 @@ class NearestFlightTest {
 
         val expected = "30451986"
         val actual = flightdatasource.fetchNearestFlight(
-            IFIlokasjon,
+            ifiLokasjon,
             FlightList(aircraft = dummyaircrafts)
         )
         Assert.assertEquals(expected, actual)

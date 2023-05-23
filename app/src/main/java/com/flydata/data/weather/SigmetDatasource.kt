@@ -10,8 +10,6 @@ class SigmetDatasource {
     private val url = "https://api.met.no/weatherapi/sigmets/2.0/?type=airmets"
 
     suspend fun getSigmet(): String {
-        val response: String = client.get(url).body()
-
-        return response
+        return client.get(url).body()
     }
 }

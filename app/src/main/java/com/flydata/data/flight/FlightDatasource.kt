@@ -165,7 +165,6 @@ class FlightDatasource(private val mainScreenViewmodel: MainScreenViewmodel) {
             }
         }
 
-        val flightDetails = nearestFLightState[0]
-        return flightDetails
+        return nearestFLightState[0]
     }
 }

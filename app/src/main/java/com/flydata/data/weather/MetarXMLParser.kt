@@ -14,10 +14,10 @@ class MetarXmlParser {
 
     @Throws(XmlPullParserException::class, IOException::class)
     fun parse(inputStream: InputStream?): List<Metar> {
-        inputStream.use { inputStream ->
+        inputStream.use { stream ->
             val parser: XmlPullParser = Xml.newPullParser()
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
-            parser.setInput(inputStream, null)
+            parser.setInput(stream, null)
             parser.nextTag()
             return readFeed(parser)
         }

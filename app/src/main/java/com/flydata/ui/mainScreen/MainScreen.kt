@@ -33,7 +33,10 @@ import com.flydata.R
 import com.flydata.ui.airportCard.AirportCard
 import com.flydata.ui.flightCard.FlightCard
 import com.flydata.ui.flightMap.FlightMap
-import com.flydata.ui.theme.*
+import com.flydata.ui.theme.md_theme_light_onPrimary
+import com.flydata.ui.theme.md_theme_light_onPrimaryContainer
+import com.flydata.ui.theme.md_theme_light_primary
+import com.flydata.ui.theme.md_theme_light_primaryContainer
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -45,12 +48,24 @@ fun MainScreen(compActivity: ComponentActivity) {
     ComposableLifecycle { _, event ->
         val tag = "MAINSCREEN"
         when (event) {
-            Lifecycle.Event.ON_CREATE -> { Log.d(tag, "MainScreen.ON_CREATE") }
-            Lifecycle.Event.ON_START -> { Log.d(tag, "MainScreen.ON_START") }
-            Lifecycle.Event.ON_RESUME -> { Log.d(tag, "MainScreen.ON_RESUME") }
-            Lifecycle.Event.ON_PAUSE -> { Log.d(tag, "MainScreen.ON_PAUSE") }
-            Lifecycle.Event.ON_STOP -> { Log.d(tag, "MainScreen.ON_STOP") }
-            Lifecycle.Event.ON_DESTROY -> { Log.d(tag, "MainScreen.ON_DESTROY") }
+            Lifecycle.Event.ON_CREATE -> {
+                Log.d(tag, "MainScreen.ON_CREATE")
+            }
+            Lifecycle.Event.ON_START -> {
+                Log.d(tag, "MainScreen.ON_START")
+            }
+            Lifecycle.Event.ON_RESUME -> {
+                Log.d(tag, "MainScreen.ON_RESUME")
+            }
+            Lifecycle.Event.ON_PAUSE -> {
+                Log.d(tag, "MainScreen.ON_PAUSE")
+            }
+            Lifecycle.Event.ON_STOP -> {
+                Log.d(tag, "MainScreen.ON_STOP")
+            }
+            Lifecycle.Event.ON_DESTROY -> {
+                Log.d(tag, "MainScreen.ON_DESTROY")
+            }
             else -> {}
         }
     }
@@ -172,6 +187,7 @@ fun MainScreen(compActivity: ComponentActivity) {
         )
     }
 }
+
 fun getLocation(componentActivity: ComponentActivity): Location {
     locationServicePrompt(componentActivity)
 
@@ -181,10 +197,7 @@ fun getLocation(componentActivity: ComponentActivity): Location {
     val deviceLocation = Location("")
 
     // forespørsel på lokasjonen går hvert intervall
-    val locationRequest = LocationRequest.create()
-        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-        .setInterval(20000)
-        .setFastestInterval(2000)
+    val locationRequest = LocationRequest.Builder(20000).build()
 
     // Lager et objekt som kaller på lokasjonen
     val locationCallback: LocationCallback = object : LocationCallback() {
