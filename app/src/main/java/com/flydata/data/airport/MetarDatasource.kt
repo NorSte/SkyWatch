@@ -47,12 +47,14 @@ class MetarDatasource {
                 val knotNumber = word.take(5)
                 direction = knotNumber.take(3)
                 wind = knotNumber.takeLast(2)
-                weatherfound = true
-                break
+                if (wind.toFloatOrNull() != null) {
+                    // er null når ICAO slutter på KT, f.eks EPKT
+                    weatherfound = true
+                    break
+                }
             }
         }
         if (!weatherfound) { return Weather(wind, direction) }
-
         val floatWind = wind.toFloat() * 0.51
         // 03 --> 3.000 ,  3.000*0.51= 1.53 m/s
 
