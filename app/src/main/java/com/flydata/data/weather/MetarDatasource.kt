@@ -9,7 +9,7 @@ class MetarDatasource {
 
     private val client = HttpClient {}
 
-    private val baseUrl = "https://api.met.no/weatherapi/tafmetar/1.0/?" +
+    private val baseUrl = "https://gw-uio.intark.uh-it.no/in2000/weatherapi/tafmetar/1.0/?" +
         "content_type=text/xml&offset=+02:00&content=metar" +
         "&icao="
 
@@ -17,7 +17,11 @@ class MetarDatasource {
 
         val url = baseUrl + icao
 
-        val response: String = client.get(url).body()
+        val response: String = client.get(url) {
+            headers {
+                append("X-Gravitee-API-Key", "63c8656a-886c-4423-a70c-2937fd41fb5e")
+            }
+        }.body()
         val inputStream: InputStream = response.byteInputStream() // til byte
         val listOfMetar: List<Metar> = MetarXmlParser().parse(inputStream)
 
