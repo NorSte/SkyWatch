@@ -1,5 +1,8 @@
 package com.flydata.ui.airportCard
 
+/**
+ * Oppslagstabell for alle IATA-koder til flyplassnavn.
+ */
 val airportNamesMap = mapOf(
     "AAH" to "Aachen",
     "AAL" to "Aalborg",

@@ -41,7 +41,7 @@ class ChangeTypeListingTest {
 
         val airportviewmodel = AirportCardViewmodel(
             airportdatasource,
-            tafmetardatasource = tafmetardatasource,
+            metarDatasource = tafmetardatasource,
             icao = ""
         )
 

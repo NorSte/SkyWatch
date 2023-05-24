@@ -9,10 +9,20 @@ import java.util.*
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 
+/**
+ * XML parser for dokumenter med flyplass-flyvninger fra Avinor.
+ */
 class AirportFlightsXmlParser {
-
     private val ns: String? = null
 
+    /**
+     * Hovedfunksjonen for å parse XML-svaret om flyvninger fra en flyplass fra Avinor-API-et.
+     *
+     * @throws XmlPullParserException ved feil under parsing av XML-dokumentet.
+     * @throws IOException ved feil under innlesing av data.
+     * @param inputStream input-streamen som skal parses.
+     * @return Liste med [AirportFlight].
+     */
     @Throws(XmlPullParserException::class, IOException::class)
     fun parse(inputStream: InputStream): MutableList<AirportFlight> {
         inputStream.use {
@@ -126,8 +136,15 @@ class AirportFlightsXmlParser {
         }
     }
 
-    // konverterer UTC tid i ISO8601-format til norsk tid i "HH:mm" format
-    // krever minimum API-nivå på 26
+    /**
+     * Konverterer tid fra ISO8601-format til "HH:mm"-format.
+     *
+     * Fungerer kun fra UTC-tid.
+     * Krever minimum API-nivå 26.
+     *
+     * @param time stringen som skal konverteres.
+     * @return konvertert tid. Returnerer tom String hvis input var tom String.
+     */
     fun convertTime(time: String): String {
         if (time != "") {
             return SimpleDateFormat("HH:mm", Locale("no", "NO"))

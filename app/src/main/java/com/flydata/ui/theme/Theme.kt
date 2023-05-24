@@ -45,6 +45,13 @@ private val LightColorScheme = lightColorScheme(
     scrim = md_theme_light_scrim,
 )
 
+/**
+ * Composable funksjon som inneholder applikasjons designtema.
+ *
+ * @param darkTheme boolsk variabel som viser om enheten er i mørk modus eller ikke.
+ * @param dynamicColor boolsk variabel som brukes i sjekk for om dynamisk designtema er støttet.
+ * @param content innholdet som skal bruke designtemaet.
+ */
 @Composable
 fun FlydataTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

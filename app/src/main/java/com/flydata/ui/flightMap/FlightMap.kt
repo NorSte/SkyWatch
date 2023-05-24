@@ -14,11 +14,21 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 
+/**
+ * Composable funksjon som viser et kart over flyvninger.
+ *
+ * @param mainScreenViewmodel bruker viewmodel fra `mainScreen` for å navigere til flyvisning.
+ */
 @Composable
 fun FlightMap(mainScreenViewmodel: MainScreenViewmodel) {
     val flightMapViewModel by remember { mutableStateOf(FlightMapViewmodel()) }
     val flightMapUIState by flightMapViewModel.flightMapUiState.collectAsState()
 
+    /**
+     * Håndterer klikk på fly på kartet.
+     *
+     * @return returnerer en lambda-funksjon som åpner flyvisningen.
+     */
     fun handleClickMarker(): (Marker) -> Boolean {
         return { marker ->
             val icao24 = marker.title ?: ""
@@ -28,6 +38,7 @@ fun FlightMap(mainScreenViewmodel: MainScreenViewmodel) {
         }
     }
 
+    // Kartet
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         onMapClick = { mainScreenViewmodel.dismissCard() },
@@ -38,6 +49,7 @@ fun FlightMap(mainScreenViewmodel: MainScreenViewmodel) {
             )
         }
     ) {
+        // Viser et fly-ikon for hvert fly i Norge på kartet
         flightMapUIState.aircraft.forEach {
             val icao24 = it[0]
             val lat = it[2]

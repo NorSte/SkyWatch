@@ -2,7 +2,6 @@ package com.flydata
 
 import android.location.Location
 import com.flydata.data.flight.FlightDatasource
-import com.flydata.data.flight.FlightList
 import com.flydata.ui.mainScreen.MainScreenViewmodel
 import org.junit.Assert
 import org.junit.Before
@@ -89,11 +88,10 @@ class NearestFlightTest {
         val dummyaircrafts: List<List<String>> =
             listOf(list1, list2, list3, list4, list5, list6, list7, list8)
 
-        val expected = "30451986"
         val actual = flightdatasource.fetchNearestFlight(
             ifiLokasjon,
-            FlightList(aircraft = dummyaircrafts)
+            dummyaircrafts
         )
-        Assert.assertEquals(expected, actual)
+        Assert.assertEquals("30451986", actual.identification?.id ?: "")
     }
 }

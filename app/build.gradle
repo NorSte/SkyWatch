@@ -71,6 +71,8 @@ ktlint {
 // Kjør ktlint ved build
 tasks.getByPath("preBuild").dependsOn("ktlintFormat")
 
+apply plugin: "org.jetbrains.dokka"
+
 dependencies {
     // Kotlin
     implementation "androidx.core:core-ktx:1.10.1"

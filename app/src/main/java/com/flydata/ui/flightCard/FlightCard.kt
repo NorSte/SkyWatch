@@ -21,10 +21,17 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.flydata.data.flight.AirportIdentification
 import com.flydata.ui.mainScreen.MainScreenViewmodel
-import com.flydata.ui.theme.*
+import com.flydata.ui.theme.md_theme_light_primary
+import com.flydata.ui.theme.md_theme_light_secondary
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * Composable funnksjon som viser et Card-element med informasjon om en flyvning.
+ *
+ * @param mainScreenViewmodel bruker viewmodel fra `mainScreen` for å gjennomføre handling som
+ * lukking av kort eller åpning av flyplasskort.
+ */
 @Composable
 fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
     val flightViewmodel by remember {
@@ -36,10 +43,7 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
         )
     }
     val flightUIState by flightViewmodel.flightCardUIState.collectAsState()
-
-    // For Scrollable
     val scrollState = rememberScrollState()
-
     val timeTables = TimeTables(
         TimeTable(
             flightUIState.time?.scheduled?.departure ?: 0,
@@ -59,16 +63,14 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
                 state = scrollState
             )
     ) {
-        // Øverste column er all content som skal bli gjort scrollable
-        Column(
-            modifier = Modifier
-                .verticalScroll(scrollState)
-        ) {
+        Column(modifier = Modifier.verticalScroll(scrollState)) {
+            // Bare vis flykort når UI-tilstanden er lastet inn
             if (flightUIState.identification?.id != "N/A") {
                 Column(
                     Modifier
                         .background(color = md_theme_light_primary)
                 ) {
+                    // Øverste rad med fly-identifikasjon og navigasjonsknapp
                     Row(
                         Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
@@ -89,10 +91,12 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
                                 "Type: ${flightUIState.aircraft?.model?.code}",
                                 color = MaterialTheme.colorScheme.onPrimary
                             )
-                            Text(
-                                text = "Distanse: ${flightUIState.distance?.toInt()}km",
-                                color = MaterialTheme.colorScheme.onPrimary
-                            )
+                            if (flightUIState.distance != -1.0f) {
+                                Text(
+                                    text = "Distanse: ${flightUIState.distance?.toInt()}km",
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
                         }
                         IconButton(onClick = { mainScreenViewmodel.dismissCard() }) {
                             Icon(
@@ -103,8 +107,9 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
                         }
                     }
                 }
-                Column {
 
+                // Ytterligere fly-informasjon
+                Column {
                     val imageUrl = flightUIState.aircraft?.images?.medium?.get(0)?.src
                     if (imageUrl != null) {
                         AsyncImage(
@@ -117,6 +122,7 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
                         )
                     }
 
+                    // Informasjon om avgangs- og ankomstflyplass
                     Row(Modifier.fillMaxWidth()) {
                         AirportInfo(
                             mainScreenViewmodel,
@@ -152,6 +158,15 @@ fun FlightCard(mainScreenViewmodel: MainScreenViewmodel) {
     }
 }
 
+/**
+ * Composable funksjon som viser en Column-element med flyplass-informasjon.
+ *
+ * @param mainScreenViewmodel bruker viewmodel fra `mainScreen` for navigasjon til flyplasskort.
+ * @param isDestinationAirport boolsk verdi som sier om flyplassen er avgang- eller ankomstflyplass.
+ * @param airport navn og kode til flyplass.
+ * @param timeTable planlagt og forventet rutetid.
+ * @param modifier standard modifier. Må passes fra foreldre-elementet for å unngå feil.
+ */
 @Composable
 fun AirportInfo(
     mainScreenViewmodel: MainScreenViewmodel,
@@ -160,15 +175,14 @@ fun AirportInfo(
     timeTable: TimeTable,
     modifier: Modifier
 ) {
-    Column(modifier) {
-        Column(
-            // Kan klikke hvor som helst fra avg/ank ned til navnet
-            modifier = Modifier.fillMaxWidth()
-                .clickable {
-                    mainScreenViewmodel.updateDisplayedAirport(airport.code?.iata ?: "OSL")
-                    mainScreenViewmodel.displayAirport()
-                }
-        ) {
+    Column(
+        modifier.clickable {
+            mainScreenViewmodel.updateDisplayedAirport(airport.code?.iata ?: "OSL")
+            mainScreenViewmodel.displayAirport()
+        }
+    ) {
+        // Type flyplass og flyplasskode
+        Column(modifier = Modifier.fillMaxWidth()) {
             Text(
                 if (isDestinationAirport) "Ankomst" else "Avgang",
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -180,25 +194,25 @@ fun AirportInfo(
                 fontWeight = FontWeight.Bold,
                 textDecoration = TextDecoration.Underline,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.clickable {
-                    if (airport.code != null) {
-                        mainScreenViewmodel.updateDisplayedAirport(airport.code.iata)
-                        mainScreenViewmodel.displayAirport()
-                    }
-                }
             )
         }
+
+        // Fjerner "airport" fra flyplassnavn før visning
         val lastIndexOfSpace = airport.name?.lastIndexOf(" ") ?: 0
         Text(
             text = if (airport.name != null) {
                 if (lastIndexOfSpace == -1) {
                     checkMaxAirportLength(airport.name)
                 } else checkMaxAirportLength(airport.name.substring(0, lastIndexOfSpace))
-            } else { "N/A" },
+            } else {
+                "N/A"
+            },
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textDecoration = TextDecoration.Underline,
             fontSize = 13.sp
         )
+
+        // Rutetider
         Time(
             isDestinationAirport, true,
             SimpleDateFormat(
@@ -220,6 +234,13 @@ fun AirportInfo(
     }
 }
 
+/**
+ * Composable funksjon som viser rutetider
+ *
+ * @param isDestinationAirport boolsk variabel som viser om tiden handler om avgang eller ankomst.
+ * @param isPlanned boolsk variabel som viser om tiden er den planlagte eller faktiske tiden.
+ * @param time rutetiden i epoch-format.
+ */
 @Composable
 fun Time(isDestinationAirport: Boolean, isPlanned: Boolean, time: String) {
     Row(
@@ -238,13 +259,19 @@ fun Time(isDestinationAirport: Boolean, isPlanned: Boolean, time: String) {
     }
 }
 
-fun checkMaxAirportLength(string: String): String {
+/**
+ * Sørger for at flyplassnavn ikke blir for lange.
+ *
+ * @param name navn på flyplass.
+ * @return forkortet navn.
+ */
+fun checkMaxAirportLength(name: String): String {
     val maxLength = 16
 
-    return if (string.length < maxLength) {
-        string
+    return if (name.length < maxLength) {
+        name
     } else {
-        // returnerer maks 16 tegn + ...
-        string.substring(0, maxLength) + "..."
+        // Kutter navnet og legger på "..."
+        name.substring(0, maxLength) + "..."
     }
 }
