@@ -9,6 +9,10 @@ import androidx.compose.ui.Modifier
 import com.flydata.ui.mainScreen.MainScreen
 import com.flydata.ui.theme.FlydataTheme
 
+/**
+ * MainActivity i applikasjonen.
+ * Sørger for at designtema blir brukt når [MainScreen] vises.
+ */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

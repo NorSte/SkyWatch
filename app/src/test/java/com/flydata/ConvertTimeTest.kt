@@ -16,13 +16,14 @@ class ConvertTimeTest {
                 airportFlightsXmlParser.convertTime("2023-05-10T08:23:00Z"),
             "17:08" to
                 airportFlightsXmlParser.convertTime("2022-07-10T15:08:00Z"),
-            "1:54" to
+            "01:54" to
                 airportFlightsXmlParser.convertTime("2023-06-10T23:54:00Z"),
         )
         values.forEach { entry ->
             Assert.assertEquals(entry.key, entry.value)
         }
     }
+
     // tester normaltid ("vintertid") - skal bli UTC + 1 time
     @Test
     fun normalTime() {
@@ -31,7 +32,7 @@ class ConvertTimeTest {
                 airportFlightsXmlParser.convertTime("2023-01-10T09:23:00Z"),
             "16:08" to
                 airportFlightsXmlParser.convertTime("2022-12-10T15:08:00Z"),
-            "0:54" to
+            "00:54" to
                 airportFlightsXmlParser.convertTime("2023-02-10T23:54:00Z"),
         )
         values.forEach { entry ->
@@ -43,9 +44,9 @@ class ConvertTimeTest {
     fun edgeCases() {
         // sommertid startet 26. mars 2023 - tester før og etter på denne datoen
         val values = mapOf(
-            "1:30" to
+            "01:30" to
                 airportFlightsXmlParser.convertTime("2023-03-26T00:30:00Z"),
-            "6:30" to
+            "06:30" to
                 airportFlightsXmlParser.convertTime("2023-03-26T04:30:00Z"),
         )
         values.forEach { entry ->

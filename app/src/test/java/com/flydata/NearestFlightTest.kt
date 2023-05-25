@@ -2,7 +2,6 @@ package com.flydata
 
 import android.location.Location
 import com.flydata.data.flight.FlightDatasource
-import com.flydata.data.flight.FlightList
 import com.flydata.ui.mainScreen.MainScreenViewmodel
 import org.junit.Assert
 import org.junit.Before
@@ -17,20 +16,20 @@ class NearestFlightTest {
 
     @Mock
     lateinit var screenviewmodel: MainScreenViewmodel
-    lateinit var flightdatasource: FlightDatasource
+    private lateinit var flightdatasource: FlightDatasource
 
     @Mock
-    lateinit var IFIlokasjon: Location
+    lateinit var ifiLokasjon: Location
 
     @Before
     fun setUp() {
         // IFIlokasjon.set(flightLocation)
-        IFIlokasjon.setMock(true)
+        ifiLokasjon.isMock = true
         // IFIlokasjon.setLatitude(59.943)
         // IFIlokasjon.setLongitude(10.717)
 
-        given(IFIlokasjon.getLatitude()).willReturn(59.943)
-        given(IFIlokasjon.getLongitude()).willReturn(10.717)
+        given(ifiLokasjon.latitude).willReturn(59.943)
+        given(ifiLokasjon.longitude).willReturn(10.717)
         flightdatasource = FlightDatasource(screenviewmodel)
     }
 
@@ -89,11 +88,10 @@ class NearestFlightTest {
         val dummyaircrafts: List<List<String>> =
             listOf(list1, list2, list3, list4, list5, list6, list7, list8)
 
-        val expected = "30451986"
         val actual = flightdatasource.fetchNearestFlight(
-            IFIlokasjon,
-            FlightList(aircraft = dummyaircrafts)
+            ifiLokasjon,
+            dummyaircrafts
         )
-        Assert.assertEquals(expected, actual)
+        Assert.assertEquals("30451986", actual.identification?.id ?: "")
     }
 }

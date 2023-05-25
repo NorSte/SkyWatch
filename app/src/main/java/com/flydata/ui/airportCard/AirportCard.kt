@@ -24,22 +24,25 @@ import com.flydata.R
 import com.flydata.data.airport.AirportFlight
 import com.flydata.ui.mainScreen.MainScreenViewmodel
 
+/**
+ * Composable funksjon som viser et Card-element med flyplass-informasjon.
+ *
+ * @param mainScreenViewmodel bruker viewmodel fra `mainScreen` for å gjennomføre handlinger som
+ * lukking av kort eller åpning av flykort.
+ */
 @Composable
-fun AirportCard(
-    mainScreenViewmodel: MainScreenViewmodel
-) {
+fun AirportCard(mainScreenViewmodel: MainScreenViewmodel) {
     val airportViewmodel by remember {
         mutableStateOf(
             AirportCardViewmodel(
                 mainScreenViewmodel.airportDatasource,
                 mainScreenViewmodel.mainScreenUIState.value.displayedAirportIata,
-                mainScreenViewmodel.tafmetardatasource,
+                mainScreenViewmodel.metarDatasource,
                 mainScreenViewmodel.mainScreenUIState.value.displayedAirportIcao
             )
         )
     }
     val airportUIState by airportViewmodel.airportCardUIState.collectAsState()
-    // For Scrollable
     val scrollState = rememberScrollState()
 
     Card(
@@ -55,7 +58,9 @@ fun AirportCard(
             modifier = Modifier
                 .verticalScroll(scrollState)
         ) {
+            // Bare vis flyplasskort når UI-tilstanden er lastet inn
             if (airportUIState.airportCode != "") {
+                // Navigasjonsknapper
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     IconButton(onClick = { mainScreenViewmodel.displayFlight() }) {
                         Icon(
@@ -72,6 +77,8 @@ fun AirportCard(
                         )
                     }
                 }
+
+                // Flyplass-identifikasjon
                 Row(modifier = Modifier.padding(horizontal = 6.dp)) {
                     Text(
                         airportUIState.airportCode,
@@ -84,6 +91,8 @@ fun AirportCard(
                         color = Color.Gray
                     )
                 }
+
+                // METAR-værmelding
                 Row(modifier = Modifier.padding(horizontal = 6.dp)) {
                     Text(
                         "Vind: ${airportUIState.airportWeather.wind}, " +
@@ -100,6 +109,8 @@ fun AirportCard(
                         Text("Variabel vindretning")
                     }
                 }
+
+                // Tabell over flyvninger
                 FlightTable(
                     tablelist = airportUIState.airportFlights,
                     airportCardViewmodel = airportViewmodel
@@ -118,8 +129,15 @@ fun AirportCard(
     }
 }
 
+/**
+ * Composoble funksjon som viser flyvninger ved en flyplass i en tabell.
+ *
+ * @param tablelist liste over flyvninger.
+ * @param airportCardViewmodel viewmodel fra `airportCard` for å få tilgang til type flyvninger.
+ */
 @Composable
 fun FlightTable(tablelist: List<AirportFlight>, airportCardViewmodel: AirportCardViewmodel) {
+    // Oppslagstabell for statuskoder
     val statusMessages = mapOf(
         "N" to "Ny info",
         "E" to "Ny tid",
@@ -144,6 +162,7 @@ fun FlightTable(tablelist: List<AirportFlight>, airportCardViewmodel: AirportCar
                 Text("Ingen flydata tilgjengelig for denne flyplassen")
             }
         } else {
+            // Radioknapper for å endre type flyvning
             Row {
                 val radioOptions = listOf(TypeOfListing.DEPARTURE, TypeOfListing.ARRIVAL)
                 val (selected, onSelected) = remember { mutableStateOf(radioOptions[0]) }
@@ -169,6 +188,8 @@ fun FlightTable(tablelist: List<AirportFlight>, airportCardViewmodel: AirportCar
                     }
                 }
             }
+
+            // Rad med overskrifter
             Row(
                 Modifier
                     .background(MaterialTheme.colorScheme.inversePrimary)
@@ -182,6 +203,7 @@ fun FlightTable(tablelist: List<AirportFlight>, airportCardViewmodel: AirportCar
 
             Column(Modifier.padding(6.dp)) {
                 tablelist.forEach { flight ->
+                    // Rad med informasjon om flyvninger
                     Row(Modifier.fillMaxWidth()) {
                         Text(
                             airportNamesMap[flight.airport] ?: flight.airport,
@@ -198,10 +220,13 @@ fun FlightTable(tablelist: List<AirportFlight>, airportCardViewmodel: AirportCar
                         )
                         Text(
                             statusMessages[flight.statusText] ?: "",
-                            Modifier.weight(mediumColumnWeight)
+                            Modifier
+                                .weight(mediumColumnWeight)
                                 .padding(bottom = 6.dp)
                         )
                     }
+
+                    // Linje for å separere radene
                     Box(
                         Modifier
                             .fillMaxWidth()

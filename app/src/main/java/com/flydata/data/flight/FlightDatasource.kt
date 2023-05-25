@@ -9,8 +9,13 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
+/**
+ * Datakilde for flyvninger.
+ *
+ * Kan gjøre uthentinger av flyvninger i Norge, uthentinger av detaljert inforrmasjon om en gitt
+ * flyvning og uthenting av nærmeste fly.
+ */
 class FlightDatasource(private val mainScreenViewmodel: MainScreenViewmodel) {
-
     private val location: Location = Location("").apply {
         // Hvis vi ikke har posisjonen til enheten, så bruker vi posisjonen til IFI
         if (mainScreenViewmodel.deviceLocation == Location("")) {
@@ -22,13 +27,13 @@ class FlightDatasource(private val mainScreenViewmodel: MainScreenViewmodel) {
         }
     }
 
-    // koordinatene til et rektangel som innkapsler Norge
+    // Koordinatene til et rektangel som innkapsler Norge
     private val blLat = 57
     private val blLng = 4
     private val trLat = 72
     private val trLng = 17
 
-    // grense for antall fly per uthenting
+    // Grense for antall fly per uthenting
     private val limit = 300
 
     // API-parametere
@@ -36,17 +41,33 @@ class FlightDatasource(private val mainScreenViewmodel: MainScreenViewmodel) {
     private val apiKey = "35c9ce2480msh8632d62a7062939p1724b3jsnfe01a274ee5f"
     private val baseUrl = "https://flight-radar1.p.rapidapi.com"
 
-    // cache
+    // Cache for flyvninger for å redusere antall uthentinger
     private var flightCache: MutableList<FlightDetails> = mutableListOf()
 
+    /**
+     * Henter det nærmeste flyet i luftlinje.
+     *
+     * @return [FlightDetails]-objekt med all informasjon om nærmeste fly.
+     */
     fun fetchNearestFlight(): FlightDetails {
-        // gjør uthenting av fly-liste
+        // Gjør uthenting av fly-liste
         val flightList = fetchFlightList().aircraft
         if (flightList.isEmpty()) {
             return FlightDetails()
         }
 
-        // går gjennom listen med fly og finner det nærmeste flyet
+        return fetchNearestFlight(location, flightList)
+    }
+
+    /**
+     * Henter det nærmeste flyet i luftlinje.
+     *
+     * @param location lokasjonen flyene skal sorteres med avstand fra.
+     * @param flightList liste over fly-vektorene som skal letes i.
+     * @return [FlightDetails]-objekt med all informasjon om nærmeste fly.
+     */
+    fun fetchNearestFlight(location: Location, flightList: List<List<String>>): FlightDetails {
+        // Går gjennom listen med fly og finner det nærmeste flyet
         var nearestFLightState: List<String> = emptyList()
         var nearestDistance: Float = Float.MAX_VALUE
         for (state: List<String> in flightList) {
@@ -61,12 +82,17 @@ class FlightDatasource(private val mainScreenViewmodel: MainScreenViewmodel) {
             }
         }
 
-        // setter avstanden til det nærmeste flyet og returnerer det
+        // Setter avstanden til det nærmeste flyet og returnerer det
         val flightDetails = fetchFlightDetails(nearestFLightState[0])
         flightDetails.distance = nearestDistance / 1000
         return flightDetails
     }
 
+    /**
+     * Henter en liste med fly i Norge.
+     *
+     * @return [FlightList]-objekt med liste over fly-vektorer.
+     */
     fun fetchFlightList(): FlightList {
         // JSON-deserialiserer til FLightList-klassen
         val adapter = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
@@ -84,7 +110,7 @@ class FlightDatasource(private val mainScreenViewmodel: MainScreenViewmodel) {
 
         Log.d("FLIGHTLIST", request.toString())
 
-        // henter API-svar og konverterer til FLightList-objekt ved hjelp av JSON-deserialisereren
+        // Henter API-svar og konverterer til FLightList-objekt ved hjelp av JSON-deserialisereren
         val response = client.newCall(request).execute()
         val responseBody = response.body?.string()
         if (responseBody != null) {
@@ -94,8 +120,14 @@ class FlightDatasource(private val mainScreenViewmodel: MainScreenViewmodel) {
         }
     }
 
+    /**
+     * Henter detaljert informasjon om et gitt fly.
+     *
+     * @param icao24 koden til flyet som skal hentes.
+     * @return [FlightDetails]-objekt som inneholder detaljert informasjon om flyet.
+     */
     fun fetchFlightDetails(icao24: String): FlightDetails {
-        // sjekk om flightDetails ligger i cache
+        // Sjekk om flightDetails ligger i cache
         val potentialFlight = flightCache.find { flightDetails ->
             flightDetails.identification?.id == icao24
         }
@@ -116,13 +148,13 @@ class FlightDatasource(private val mainScreenViewmodel: MainScreenViewmodel) {
 
         Log.d("Test", request.toString())
 
-        // henter API-svar og konverterer til FlightDetails-objekt ved hjelp av JSON-deserialisereren
+        // Henter API-svar og konverterer til FlightDetails-objekt ved hjelp av JSON-deserialisereren
         val response = client.newCall(request).execute()
         val responseBody = response.body?.string()
         if (responseBody != null) {
             val flight = adapter.fromJson(responseBody)!!
 
-            // legger flyplassinformasjon som bare kan hentes fra dette API-et i flyplass repository
+            // Legger flyplassinformasjon som bare kan hentes fra dette API-et i flyplass repository
             val iataOrigin = flight.airport?.origin?.code?.iata ?: "OSL"
             val icaoOrigin = flight.airport?.origin?.code?.icao ?: "ENGM"
             val nameOrigin = flight.airport?.origin?.name ?: "Oslo Lufthavn"
@@ -137,35 +169,11 @@ class FlightDatasource(private val mainScreenViewmodel: MainScreenViewmodel) {
             mainScreenViewmodel.addIdentification(originIdentification)
             mainScreenViewmodel.addIdentification(destinationIdentification)
 
-            // legg til flight i cache og returner
+            // Legg til flight i cache og returner
             flightCache.add(flight)
             return flight
         } else {
             throw Exception("Response body is null")
         }
-    }
-
-    // funksjonen tar en lokasjon, og en flightlist, og returnerer fly ID-en av nærmeste fly
-    fun fetchNearestFlight(location: Location, flightlist: FlightList): String {
-        // gjør uthenting av fly-liste
-        val flightList = flightlist.aircraft
-
-        // går gjennom listen med fly og finner det nærmeste flyet
-        var nearestFLightState: List<String> = emptyList()
-        var nearestDistance: Float = Float.MAX_VALUE
-        for (state: List<String> in flightList) {
-            val flightLocation = Location("").apply {
-                latitude = state[2].toDouble()
-                longitude = state[3].toDouble()
-            }
-            val distance = location.distanceTo(flightLocation)
-            if (distance < nearestDistance) {
-                nearestFLightState = state
-                nearestDistance = distance
-            }
-        }
-
-        val flightDetails = nearestFLightState[0]
-        return flightDetails
     }
 }

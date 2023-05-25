@@ -1,4 +1,4 @@
-package com.flydata.data.airport
+package com.flydata.data.weather
 
 import android.util.Xml
 import java.io.IOException
@@ -6,18 +6,26 @@ import java.io.InputStream
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 
-private val ns: String? = null
-
-data class Metar(val metarText: String?)
-
+/**
+ * XML parser for dokumenter med METAR-værmeldinger fra MET.
+ */
 class MetarXmlParser {
+    private val ns: String? = null
 
+    /**
+     * Hovedfunksjonen for å parse XML-svaret om METAR-værmeldinger.
+     *
+     * @throws XmlPullParserException ved feil under parsing av XML-dokumentet.
+     * @throws IOException ved feil under innlesing av data.
+     * @param inputStream input-streamen som skal parses.
+     * @return Liste med [Metar]-værmeldinger.
+     */
     @Throws(XmlPullParserException::class, IOException::class)
     fun parse(inputStream: InputStream?): List<Metar> {
-        inputStream.use { inputStream ->
+        inputStream.use { stream ->
             val parser: XmlPullParser = Xml.newPullParser()
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
-            parser.setInput(inputStream, null)
+            parser.setInput(stream, null)
             parser.nextTag()
             return readFeed(parser)
         }
@@ -90,3 +98,10 @@ class MetarXmlParser {
         }
     }
 }
+
+/**
+ * Dataklasse for METAR-værmeldinger.
+ *
+ * @property metarText METAR-melding.
+ */
+data class Metar(val metarText: String?)
