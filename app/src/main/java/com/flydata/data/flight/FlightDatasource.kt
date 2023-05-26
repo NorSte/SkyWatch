@@ -38,7 +38,7 @@ class FlightDatasource(private val mainScreenViewmodel: MainScreenViewmodel) {
 
     // API-parametere
     private val client = OkHttpClient()
-    private val apiKey = "35c9ce2480msh8632d62a7062939p1724b3jsnfe01a274ee5f"
+    private val apiKey = "a17611f0a4mshae99c0a1ac03ecap12fdc0jsn0334234ad7ea"
     private val baseUrl = "https://flight-radar1.p.rapidapi.com"
 
     // Cache for flyvninger for å redusere antall uthentinger
